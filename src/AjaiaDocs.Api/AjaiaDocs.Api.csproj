@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\AjaiaDocs.Core\AjaiaDocs.Core.csproj" />
+    <ProjectReference Include="..\AjaiaDocs.Application\AjaiaDocs.Application.csproj" />
+    <ProjectReference Include="..\AjaiaDocs.Infrastructure\AjaiaDocs.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Carter" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
