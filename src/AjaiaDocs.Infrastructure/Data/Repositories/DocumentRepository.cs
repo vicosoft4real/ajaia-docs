@@ -41,12 +41,30 @@ public sealed class DocumentRepository(AjaiaDbConnectionFactory connections) : I
     public async Task<Result<DocumentDto>> CreateAsync(Document document, CancellationToken ct)
     {
         await using var connection = await connections.OpenConnectionAsync(ct);
-        await connection.ExecuteAsync(new CommandDefinition(
+        var row = await connection.QuerySingleAsync<DocumentRow>(new CommandDefinition(
             """
-            INSERT INTO documents
-                (id, owner_id, title, content_format, content, plain_text, version, created_at, updated_at)
-            VALUES
-                (@Id, @OwnerId, @Title, @ContentFormat, @Content, @PlainText, @Version, @CreatedAt, @UpdatedAt);
+            WITH inserted AS (
+                INSERT INTO documents
+                    (id, owner_id, title, content_format, content, plain_text, version, created_at, updated_at)
+                VALUES
+                    (@Id, @OwnerId, @Title, @ContentFormat, @Content, @PlainText, @Version, @CreatedAt, @UpdatedAt)
+                RETURNING *
+            )
+            SELECT d.id AS Id,
+                   d.owner_id AS OwnerId,
+                   d.title AS Title,
+                   d.content_format AS ContentFormat,
+                   d.content AS Content,
+                   d.plain_text AS PlainText,
+                   d.version AS Version,
+                   d.created_at AS CreatedAt,
+                   d.updated_at AS UpdatedAt,
+                   owner.display_name AS OwnerDisplayName,
+                   owner.email AS OwnerEmail,
+                   owner.avatar_color AS OwnerAvatarColor,
+                   true AS IsOwner
+            FROM inserted d
+            JOIN app_users owner ON owner.id = d.owner_id;
             """,
             new
             {
@@ -61,7 +79,7 @@ public sealed class DocumentRepository(AjaiaDbConnectionFactory connections) : I
                 UpdatedAt = document.UpdatedAt.UtcDateTime
             }, cancellationToken: ct));
 
-        return await GetAsync(document.OwnerId, document.Id, ct);
+        return Result<DocumentDto>.Success(ToDocument(row));
     }
 
     public async Task<Result<IReadOnlyList<DocumentListItemDto>>> ListAsync(Guid actorId,

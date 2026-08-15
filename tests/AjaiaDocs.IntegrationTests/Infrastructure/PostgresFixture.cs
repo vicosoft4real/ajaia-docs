@@ -29,10 +29,12 @@ public sealed class PostgresFixture : IAsyncLifetime
 
     public UserRepository Users { get; private set; } = null!;
 
+    public string ConnectionString => _container.GetConnectionString();
+
     public async Task InitializeAsync()
     {
         await _container.StartAsync();
-        _connections = new AjaiaDbConnectionFactory(_container.GetConnectionString());
+        _connections = new AjaiaDbConnectionFactory(ConnectionString);
         Migrator = new SchemaMigrationRunner(_connections);
         Documents = new DocumentRepository(_connections);
         Users = new UserRepository(_connections);

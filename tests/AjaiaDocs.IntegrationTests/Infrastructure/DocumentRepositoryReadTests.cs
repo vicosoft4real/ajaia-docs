@@ -47,6 +47,24 @@ public sealed class DocumentRepositoryReadTests(PostgresFixture fixture) : IAsyn
     }
 
     [Fact]
+    public async Task Owned_scope_returns_only_documents_owned_by_actor()
+    {
+        var owned = CreateDocument(DemoUsers.AminaId, "Owned", DateTimeOffset.UtcNow);
+        var shared = CreateDocument(DemoUsers.ChidiId, "Shared", DateTimeOffset.UtcNow);
+        await fixture.Documents.CreateAsync(owned, CancellationToken.None);
+        await fixture.Documents.CreateAsync(shared, CancellationToken.None);
+        await ShareAsync(shared.Id, DemoUsers.AminaId, DemoUsers.ChidiId);
+
+        var rows = await fixture.Documents.ListAsync(DemoUsers.AminaId,
+            DocumentScope.Owned, CancellationToken.None);
+
+        Assert.True(rows.IsSuccess);
+        var row = Assert.Single(rows.Value);
+        Assert.Equal(owned.Id, row.Id);
+        Assert.True(row.IsOwner);
+    }
+
+    [Fact]
     public async Task All_scope_orders_accessible_documents_by_updated_time_then_id()
     {
         var timestamp = DateTimeOffset.UtcNow;
@@ -98,6 +116,31 @@ public sealed class DocumentRepositoryReadTests(PostgresFixture fixture) : IAsyn
 
         Assert.False(result.IsSuccess);
         Assert.Equal("not_found", result.Error.Code);
+    }
+
+    [Fact]
+    public async Task Unknown_document_get_is_concealed_as_not_found()
+    {
+        var result = await fixture.Documents.GetAsync(DemoUsers.AminaId, Guid.NewGuid(),
+            CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("not_found", result.Error.Code);
+    }
+
+    [Fact]
+    public async Task Create_returns_the_single_persisted_owner_projection()
+    {
+        var document = CreateDocument(DemoUsers.AminaId, "Atomic create", DateTimeOffset.UtcNow);
+
+        var result = await fixture.Documents.CreateAsync(document, CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(document.Id, result.Value.Id);
+        Assert.Equal("Amina Okafor", result.Value.Owner.DisplayName);
+        await using var connection = await fixture.OpenConnectionAsync();
+        Assert.Equal(1, await connection.ExecuteScalarAsync<int>(
+            "SELECT count(*) FROM documents WHERE id = @Id", new { document.Id }));
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

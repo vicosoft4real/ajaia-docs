@@ -16,7 +16,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException(
                 "Connection string 'ConnectionStrings:Postgres' is required.");
 
-        services.AddSingleton(new AjaiaDbConnectionFactory(connectionString));
+        services.AddSingleton(_ => new AjaiaDbConnectionFactory(connectionString));
         services.AddSingleton<SchemaMigrationRunner>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
