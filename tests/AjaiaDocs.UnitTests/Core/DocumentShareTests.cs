@@ -1,3 +1,4 @@
+using AjaiaDocs.Core.Common;
 using AjaiaDocs.Core.Documents;
 
 namespace AjaiaDocs.UnitTests.Core;
@@ -15,6 +16,7 @@ public sealed class DocumentShareTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("owner_cannot_be_collaborator", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     [Fact]

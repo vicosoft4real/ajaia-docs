@@ -1,4 +1,5 @@
 using System.Text;
+using AjaiaDocs.Core.Common;
 using AjaiaDocs.Core.Documents;
 
 namespace AjaiaDocs.UnitTests.Core;
@@ -36,6 +37,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("title_required", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     [Fact]
@@ -55,6 +57,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("title_too_long", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     [Fact]
@@ -79,6 +82,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("conflict", result.Error.Code);
+        Assert.Equal(ErrorType.Conflict, result.Error.Type);
     }
 
     [Fact]
@@ -105,6 +109,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("conflict", result.Error.Code);
+        Assert.Equal(ErrorType.Conflict, result.Error.Type);
     }
 
     [Fact]
@@ -118,6 +123,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("content_too_large", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     [Fact]
@@ -130,6 +136,18 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("invalid_content_format", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
+    }
+
+    [Fact]
+    public void Create_rejects_an_unknown_content_format()
+    {
+        var result = Document.Create(DocumentId, OwnerId, "Title", (ContentFormat)99,
+            "content", "content", Now);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("invalid_content_format", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     [Fact]
@@ -142,6 +160,7 @@ public sealed class DocumentTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("content_too_large", result.Error.Code);
+        Assert.Equal(ErrorType.Validation, result.Error.Type);
     }
 
     private static Document CreateDocument() => Document.Create(DocumentId, OwnerId, "Original",
