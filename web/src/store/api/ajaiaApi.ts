@@ -1,12 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearSession, setAntiforgeryToken, setCurrentUser, type SessionState } from "../../features/auth/sessionSlice";
-import type { AntiforgeryResponse, DocumentDetail, DocumentSummary, User } from "../../types/api";
+import type { AntiforgeryResponse, DocumentDetail, DocumentShare, DocumentSummary, ShareCandidate, User } from "../../types/api";
 
 type ApiState = { session: SessionState };
 
 export const ajaiaApi = createApi({
   reducerPath: "ajaiaApi",
-  tagTypes: ["Session", "Documents", "Document"],
+  tagTypes: ["Session", "Documents", "Document", "Shares", "ShareCandidates"],
   baseQuery: fetchBaseQuery({
     baseUrl: "/api",
     credentials: "include",
@@ -68,7 +68,23 @@ export const ajaiaApi = createApi({
     getDocument: builder.query<DocumentDetail, string>({ query: (id) => `/documents/${id}`, providesTags: (_result, _error, id) => [{ type: "Document", id }] }),
     updateDocumentContent: builder.mutation<DocumentDetail, { id: string; contentFormat: "lexical"; content: string; plainText: string; expectedVersion: number }>({ query: ({ id, ...body }) => ({ url: `/documents/${id}/content`, method: "PUT", body }) }),
     updateDocumentTitle: builder.mutation<DocumentDetail, { id: string; title: string; expectedVersion: number }>({ query: ({ id, ...body }) => ({ url: `/documents/${id}/title`, method: "PUT", body }) }),
+    getShareCandidates: builder.query<ShareCandidate[], string>({
+      query: (documentId) => ({ url: "/users/share-candidates", params: { documentId } }),
+      providesTags: (_result, _error, documentId) => [{ type: "ShareCandidates", id: documentId }],
+    }),
+    getShares: builder.query<DocumentShare[], string>({
+      query: (documentId) => `/documents/${documentId}/shares`,
+      providesTags: (_result, _error, documentId) => [{ type: "Shares", id: documentId }],
+    }),
+    grantShare: builder.mutation<DocumentShare, { documentId: string; userId: string }>({
+      query: ({ documentId, userId }) => ({ url: `/documents/${documentId}/shares`, method: "POST", body: { userId } }),
+      invalidatesTags: (_result, _error, { documentId }) => [{ type: "Shares", id: documentId }, { type: "ShareCandidates", id: documentId }, { type: "Documents", id: "LIST" }],
+    }),
+    revokeShare: builder.mutation<void, { documentId: string; userId: string }>({
+      query: ({ documentId, userId }) => ({ url: `/documents/${documentId}/shares/${userId}`, method: "DELETE" }),
+      invalidatesTags: (_result, _error, { documentId }) => [{ type: "Shares", id: documentId }, { type: "ShareCandidates", id: documentId }, { type: "Documents", id: "LIST" }],
+    }),
   }),
 });
 
-export const { useCreateDocumentMutation, useDeleteDocumentMutation, useEndSessionMutation, useGetAntiforgeryQuery, useGetDocumentQuery, useGetDocumentsQuery, useGetSessionQuery, useImportDocumentMutation, useLazyGetAntiforgeryQuery, useStartSessionMutation, useUpdateDocumentContentMutation, useUpdateDocumentTitleMutation } = ajaiaApi;
+export const { useCreateDocumentMutation, useDeleteDocumentMutation, useEndSessionMutation, useGetAntiforgeryQuery, useGetDocumentQuery, useGetDocumentsQuery, useGetSessionQuery, useGetShareCandidatesQuery, useGetSharesQuery, useGrantShareMutation, useImportDocumentMutation, useLazyGetAntiforgeryQuery, useRevokeShareMutation, useStartSessionMutation, useUpdateDocumentContentMutation, useUpdateDocumentTitleMutation } = ajaiaApi;

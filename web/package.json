@@ -20,13 +20,14 @@
   "dependencies": {
     "@fontsource-variable/literata": "5.2.8",
     "@fontsource-variable/manrope": "5.2.8",
-    "@radix-ui/react-dialog": "^1.1.23",
     "@lexical/list": "0.41.0",
     "@lexical/markdown": "0.41.0",
     "@lexical/react": "0.41.0",
     "@lexical/rich-text": "0.41.0",
     "@lexical/selection": "0.41.0",
     "@lexical/utils": "0.41.0",
+    "@radix-ui/react-alert-dialog": "1.1.14",
+    "@radix-ui/react-dialog": "^1.1.23",
     "@reduxjs/toolkit": "2.11.2",
     "clsx": "2.1.1",
     "lexical": "0.41.0",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",
+    "@playwright/test": "1.55.1",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
