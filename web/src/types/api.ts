@@ -13,11 +13,12 @@ export type ProblemDetails = {
 
 export type AntiforgeryResponse = { token: string };
 export type UserSummary = User;
-export type DocumentListItem = {
-  id: string; ownerId: string; title: string; contentFormat: string; plainText: string;
+export type DocumentSummary = {
+  id: string; ownerId: string; title: string; contentFormat: "lexical" | "markdown" | "plainText"; plainText: string;
   version: number; updatedAt: string; owner: UserSummary; isOwner: boolean;
 };
-export type DocumentDetail = DocumentListItem & {
+export type DocumentListItem = DocumentSummary;
+export type DocumentDetail = DocumentSummary & {
   content: string; createdAt: string; canEdit: boolean; canRename: boolean;
   canShare: boolean; canDelete: boolean;
 };

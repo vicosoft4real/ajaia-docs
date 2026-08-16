@@ -20,6 +20,7 @@
   "dependencies": {
     "@fontsource-variable/literata": "5.2.8",
     "@fontsource-variable/manrope": "5.2.8",
+    "@radix-ui/react-dialog": "^1.1.23",
     "@reduxjs/toolkit": "2.11.2",
     "clsx": "2.1.1",
     "lucide-react": "0.539.0",

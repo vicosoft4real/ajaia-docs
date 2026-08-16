@@ -1,11 +1,12 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearSession, setAntiforgeryToken, setCurrentUser, type SessionState } from "../../features/auth/sessionSlice";
-import type { AntiforgeryResponse, User } from "../../types/api";
+import type { AntiforgeryResponse, DocumentDetail, DocumentSummary, User } from "../../types/api";
 
 type ApiState = { session: SessionState };
 
 export const ajaiaApi = createApi({
   reducerPath: "ajaiaApi",
+  tagTypes: ["Documents", "Document"],
   baseQuery: fetchBaseQuery({
     baseUrl: "/api",
     credentials: "include",
@@ -43,7 +44,25 @@ export const ajaiaApi = createApi({
         dispatch(clearSession());
       },
     }),
+    getDocuments: builder.query<DocumentSummary[], "all" | "owned" | "shared">({
+      query: (scope) => ({ url: "/documents", params: { scope } }),
+      providesTags: (result) => result
+        ? [{ type: "Documents" as const, id: "LIST" }, ...result.map(({ id }) => ({ type: "Document" as const, id }))]
+        : [{ type: "Documents", id: "LIST" }],
+    }),
+    createDocument: builder.mutation<DocumentDetail, { title?: string }>({
+      query: (body) => ({ url: "/documents", method: "POST", body }),
+      invalidatesTags: [{ type: "Documents", id: "LIST" }],
+    }),
+    importDocument: builder.mutation<DocumentDetail, File>({
+      query: (file) => { const body = new FormData(); body.append("file", file); return { url: "/documents/import", method: "POST", body }; },
+      invalidatesTags: [{ type: "Documents", id: "LIST" }],
+    }),
+    deleteDocument: builder.mutation<void, string>({
+      query: (id) => ({ url: `/documents/${id}`, method: "DELETE" }),
+      invalidatesTags: (_result, _error, id) => [{ type: "Documents", id: "LIST" }, { type: "Document", id }],
+    }),
   }),
 });
 
-export const { useEndSessionMutation, useGetAntiforgeryQuery, useGetSessionQuery, useLazyGetAntiforgeryQuery, useStartSessionMutation } = ajaiaApi;
+export const { useCreateDocumentMutation, useDeleteDocumentMutation, useEndSessionMutation, useGetAntiforgeryQuery, useGetDocumentsQuery, useGetSessionQuery, useImportDocumentMutation, useLazyGetAntiforgeryQuery, useStartSessionMutation } = ajaiaApi;
