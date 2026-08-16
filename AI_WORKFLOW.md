@@ -43,7 +43,7 @@ The integrated frontend release gate verified **22 files / 47 tests**, `pnpm --d
 
 The clean-state installed-Google-Chrome `ajaia-docs.spec.ts` journey passed **2/2**, covering create/format/share/collaborator and Markdown-import paths with no browser errors. The visual spec passed **1/1**. The four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The visual gate covers responsive overflow, visible keyboard focus, and browser diagnostics.
 
-A release blocker found during the final pass could retain reviewer-specific cached data after switching identities. It was fixed in `07ad85f`. A second release fix, `a9a2d57`, avoids a session refetch during logout and adds the fifth focused AppShell regression test; the focused AppShell gate passed **5 tests** and typecheck. Render deployment, its public health check, and the Chrome run against the public origin have not been performed.
+A release blocker found during the final pass could retain reviewer-specific cached data after switching identities. It was fixed in `07ad85f`. A second release fix, `a9a2d57`, avoids a session refetch during logout; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed. Render deployment, its public health check, and the Chrome run against the public origin have not been performed.
 
 ## Quality guardrails
 

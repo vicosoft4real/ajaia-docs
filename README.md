@@ -10,7 +10,7 @@ The backend release gate at commit `95d85d0` verified **66 unit tests** and **59
 
 The clean-state installed-Google-Chrome journey passed **2/2** (create/format/share/collaborator flow and Markdown import) with no browser errors. The visual spec also passed **1/1**; all four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The Render deployment has not been completed, so no public URL is claimed.
 
-A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing fix in `a9a2d57` added a fifth focused AppShell regression test; the focused AppShell gate passed **5 tests** and typecheck.
+A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing regression was fixed in `a9a2d57`; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed.
 
 ## Quick start (Docker)
 

@@ -13,7 +13,7 @@ This is the evidence-led submission package for Ajaia Docs. It deliberately sepa
 | Docker runtime | Docker image rebuilt; Compose PostgreSQL and API services running; `/health` returned `{"status":"healthy"}` |
 | Clean Chrome product journey | Installed-Google-Chrome `ajaia-docs.spec.ts` passed 2/2: create/format/share/collaborator and Markdown import; no browser errors |
 | Desktop/mobile Chrome screenshots | Chrome visual rerun passed 1/1 in installed Google Chrome; all four screenshots inspected and committed in `6527635` |
-| Cross-user cache/logout blockers | Reviewer cache fixed in `07ad85f`; logout sequencing fixed in `a9a2d57`; focused AppShell 5 tests and typecheck passed |
+| Cross-user cache/logout blockers | Reviewer cache fixed in `07ad85f`; logout sequencing fixed in `a9a2d57`; AppShell 4-test suite and typecheck passed |
 | Render public URL and deployed E2E evidence | Not deployed yet |
 | Human walkthrough recording URL | Candidate-owned; `WALKTHROUGH_VIDEO_URL.txt` contains the pending-recording handoff until a final unlisted URL exists |
 | Archive and Google Drive upload | Candidate-owned after final merge; not yet created/uploaded |
@@ -58,7 +58,7 @@ These are seeded demo identities, not production accounts. No password is requir
 - Collaborator document access and content editing, while owner-only actions return a protected `owner_required` failure
 - Concealed inaccessible documents (`404`) and sanitized structured API errors
 
-The integrated frontend gate verified 22 files / 47 tests, typecheck, lint, and production build. The Docker image rebuilt, local Compose PostgreSQL/API services are running, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors; the Chrome visual rerun passed 1/1 and all four 1440×1000/390×844 screenshots were inspected. A cross-user cache blocker was fixed in `07ad85f`; the logout sequencing fix in `a9a2d57` added a fifth focused AppShell test, and that focused gate plus typecheck passed.
+The integrated frontend gate verified 22 files / 47 tests, typecheck, lint, and production build. The Docker image rebuilt, local Compose PostgreSQL/API services are running, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors; the Chrome visual rerun passed 1/1 and all four 1440×1000/390×844 screenshots were inspected. A cross-user cache blocker was fixed in `07ad85f`; the logout sequencing regression was fixed in `a9a2d57`, after which the AppShell 4-test suite and typecheck passed.
 
 ## Verified tests
 
