@@ -27,10 +27,22 @@ public sealed class PostgresConnectionStringTests
         Assert.Equal("ajaia-docs", parsed.Database);
     }
 
+    [Fact]
+    public void Normalize_UsesPostgresDefaultPortWhenRenderUriOmitsPort()
+    {
+        var normalized = PostgresConnectionString.Normalize(
+            "postgresql://render:secret@internal-db/ajaia_docs");
+        var parsed = new NpgsqlConnectionStringBuilder(normalized);
+
+        Assert.Equal("internal-db", parsed.Host);
+        Assert.Equal(5432, parsed.Port);
+        Assert.Equal("ajaia_docs", parsed.Database);
+    }
+
     [Theory]
-    [InlineData("postgresql://user:password@host/database")]
     [InlineData("postgresql://user@host:5432/database")]
     [InlineData("postgresql://user:password@:5432/database")]
+    [InlineData("postgresql://user:password@host:0/database")]
     [InlineData("postgresql://user:password@host:5432/")]
     [InlineData("postgresql://user:password@host:5432/database?sslmode=require")]
     [InlineData("mysql://user:password@host:3306/database")]
