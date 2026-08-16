@@ -3,6 +3,20 @@ import { describe, expect, it } from "vitest";
 import { renderEditor } from "./test/renderEditor";
 
 describe("DocumentToolbar", () => {
+  it.each([["Bulleted list", "UL"], ["Numbered list", "OL"]] as const)("toggles %s back to a paragraph", async (name, tag) => {
+    const { user } = renderEditor("Item", "plainText");
+    const content = screen.getByRole("textbox", { name: "Document content" });
+    const toggle = screen.getByRole("button", { name });
+    await user.click(content);
+    await user.click(toggle);
+    expect(screen.getByRole("list").tagName).toBe(tag);
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await user.click(toggle);
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
+    expect(content.querySelector("p")).toHaveTextContent("Item");
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+  });
+
   it("exposes accessible formatting controls with focus styling and active state", async () => {
     const { user } = renderEditor("Strong", "plainText");
     const bold = screen.getByRole("button", { name: "Bold" });
