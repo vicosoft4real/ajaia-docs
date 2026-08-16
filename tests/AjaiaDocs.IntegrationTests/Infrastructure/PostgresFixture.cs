@@ -27,6 +27,8 @@ public sealed class PostgresFixture : IAsyncLifetime
 
     public DocumentRepository Documents { get; private set; } = null!;
 
+    public DocumentShareRepository Shares { get; private set; } = null!;
+
     public UserRepository Users { get; private set; } = null!;
 
     public string ConnectionString => _container.GetConnectionString();
@@ -37,6 +39,7 @@ public sealed class PostgresFixture : IAsyncLifetime
         _connections = new AjaiaDbConnectionFactory(ConnectionString);
         Migrator = new SchemaMigrationRunner(_connections);
         Documents = new DocumentRepository(_connections);
+        Shares = new DocumentShareRepository(_connections);
         Users = new UserRepository(_connections);
         await Migrator.MigrateAsync(CancellationToken.None);
     }

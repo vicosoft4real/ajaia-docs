@@ -71,6 +71,9 @@ public sealed class UserRepositoryReadTests(PostgresFixture fixture) : IAsyncLif
         Assert.True(result.IsSuccess);
         var candidate = Assert.Single(result.Value);
         Assert.Equal(DemoUsers.TayoId, candidate.Id);
+        Assert.Equal("Tayo Bello", candidate.DisplayName);
+        Assert.Equal("tayo@example.test", candidate.Email);
+        Assert.Equal("#C77A15", candidate.AvatarColor);
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

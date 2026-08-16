@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddSingleton(_ => new AjaiaDbConnectionFactory(connectionString));
         services.AddSingleton<SchemaMigrationRunner>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IDocumentShareRepository, DocumentShareRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         return services;

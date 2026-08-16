@@ -33,6 +33,8 @@ public sealed class DependencyInjectionTests(PostgresFixture fixture)
             using var scope = provider.CreateScope();
             Assert.IsType<DocumentRepository>(scope.ServiceProvider
                 .GetRequiredService<IDocumentRepository>());
+            Assert.IsType<DocumentShareRepository>(scope.ServiceProvider
+                .GetRequiredService<IDocumentShareRepository>());
             Assert.IsType<UserRepository>(scope.ServiceProvider
                 .GetRequiredService<IUserRepository>());
 

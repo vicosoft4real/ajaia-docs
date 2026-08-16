@@ -1,4 +1,5 @@
 using AjaiaDocs.Application.Common.Interfaces;
+using AjaiaDocs.Application.Features.Sharing;
 using AjaiaDocs.Core.Common;
 using AjaiaDocs.Core.Documents;
 using AjaiaDocs.Core.Users;
@@ -24,7 +25,7 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
             : Result<User>.Success(ToUser(row));
     }
 
-    public async Task<Result<IReadOnlyList<User>>> ListShareCandidatesAsync(Guid actorId,
+    public async Task<Result<IReadOnlyList<ShareCandidateDto>>> ListShareCandidatesAsync(Guid actorId,
         Guid documentId, CancellationToken ct)
     {
         await using var connection = await connections.OpenConnectionAsync(ct);
@@ -43,14 +44,14 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
 
         if (access is null)
         {
-            return Result<IReadOnlyList<User>>.Failure(NotFound());
+            return Result<IReadOnlyList<ShareCandidateDto>>.Failure(NotFound());
         }
 
         var decision = DocumentAccessPolicy.Decide(actorId, access.OwnerId, access.HasShare,
             DocumentOperation.Share);
         if (!decision.Allowed)
         {
-            return Result<IReadOnlyList<User>>.Failure(decision.IsNotFound
+            return Result<IReadOnlyList<ShareCandidateDto>>.Failure(decision.IsNotFound
                 ? NotFound()
                 : new AjaiaError("owner_required", "Only the document owner can share it.",
                     ErrorType.Forbidden));
@@ -61,6 +62,7 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
             SELECT candidate.id AS Id,
                    candidate.email AS Email,
                    candidate.display_name AS DisplayName,
+                   candidate.avatar_color AS AvatarColor,
                    candidate.created_at AS CreatedAt
             FROM app_users candidate
             WHERE candidate.is_seeded = true
@@ -73,7 +75,7 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
             ORDER BY candidate.display_name, candidate.id
             """, new { ActorId = actorId, DocumentId = documentId }, cancellationToken: ct));
 
-        return Result<IReadOnlyList<User>>.Success(rows.Select(ToUser).ToArray());
+        return Result<IReadOnlyList<ShareCandidateDto>>.Success(rows.Select(ToCandidate).ToArray());
     }
 
     private static AjaiaError NotFound() => new("not_found", "The document was not found.",
@@ -82,11 +84,15 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
     private static User ToUser(UserRow row) => new(row.Id, row.Email, row.DisplayName,
         new DateTimeOffset(DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc)));
 
+    private static ShareCandidateDto ToCandidate(UserRow row) => new(row.Id, row.DisplayName,
+        row.Email, row.AvatarColor);
+
     private sealed class UserRow
     {
         public Guid Id { get; init; }
         public string Email { get; init; } = string.Empty;
         public string DisplayName { get; init; } = string.Empty;
+        public string AvatarColor { get; init; } = string.Empty;
         public DateTime CreatedAt { get; init; }
     }
 

@@ -3,6 +3,11 @@ using AjaiaDocs.Application.Common.Interfaces;
 using AjaiaDocs.Application.Features.Documents.CreateDocument;
 using AjaiaDocs.Application.Features.Documents.GetDocument;
 using AjaiaDocs.Application.Features.Documents.ListDocuments;
+using AjaiaDocs.Application.Features.Import;
+using AjaiaDocs.Application.Features.Sharing.GetShareCandidates;
+using AjaiaDocs.Application.Features.Sharing.GrantShare;
+using AjaiaDocs.Application.Features.Sharing.ListShares;
+using AjaiaDocs.Application.Features.Sharing.RevokeShare;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
@@ -16,6 +21,8 @@ public sealed class DependencyInjectionTests
     {
         var services = new ServiceCollection();
         services.AddSingleton(Substitute.For<IDocumentRepository>());
+        services.AddSingleton(Substitute.For<IDocumentShareRepository>());
+        services.AddSingleton(Substitute.For<IUserRepository>());
 
         services.AddAjaiaDocsApplication();
 
@@ -23,6 +30,17 @@ public sealed class DependencyInjectionTests
         Assert.IsType<CreateDocumentHandler>(provider.GetRequiredService<CreateDocumentHandler>());
         Assert.IsType<ListDocumentsHandler>(provider.GetRequiredService<ListDocumentsHandler>());
         Assert.IsType<GetDocumentHandler>(provider.GetRequiredService<GetDocumentHandler>());
+        Assert.IsType<StrictTextImportParser>(
+            provider.GetRequiredService<StrictTextImportParser>());
+        Assert.IsType<ImportDocumentHandler>(provider.GetRequiredService<ImportDocumentHandler>());
+        Assert.IsType<GetShareCandidatesHandler>(
+            provider.GetRequiredService<GetShareCandidatesHandler>());
+        Assert.IsType<ListDocumentSharesHandler>(
+            provider.GetRequiredService<ListDocumentSharesHandler>());
+        Assert.IsType<GrantDocumentShareHandler>(
+            provider.GetRequiredService<GrantDocumentShareHandler>());
+        Assert.IsType<RevokeDocumentShareHandler>(
+            provider.GetRequiredService<RevokeDocumentShareHandler>());
         Assert.IsType<CreateDocumentValidator>(
             provider.GetRequiredService<IValidator<CreateDocumentCommand>>());
         Assert.Same(TimeProvider.System, provider.GetRequiredService<TimeProvider>());
