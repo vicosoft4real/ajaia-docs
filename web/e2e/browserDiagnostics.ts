@@ -26,7 +26,16 @@ export async function expectNoHorizontalOverflow(page: Page): Promise<void> {
 
 export async function expectVisibleFocus(page: Page): Promise<void> {
   const newDocument = page.getByRole("button", { name: /new document/i });
-  await newDocument.focus();
+  const maximumTabs = 20;
+
+  for (let tab = 0; tab < maximumTabs; tab += 1) {
+    if (await newDocument.evaluate((element) => document.activeElement === element)) {
+      break;
+    }
+
+    await page.keyboard.press("Tab");
+  }
+
   await expect(newDocument).toBeFocused();
 
   const focusTreatment = await newDocument.evaluate((element) => {
