@@ -9,6 +9,7 @@
     <PackageReference Include="coverlet.collector" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Npgsql" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
   </ItemGroup>
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\..\src\AjaiaDocs.Api\AjaiaDocs.Api.csproj" />
     <ProjectReference Include="..\..\src\AjaiaDocs.Core\AjaiaDocs.Core.csproj" />
     <ProjectReference Include="..\..\src\AjaiaDocs.Application\AjaiaDocs.Application.csproj" />
+    <ProjectReference Include="..\..\src\AjaiaDocs.Infrastructure\AjaiaDocs.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
