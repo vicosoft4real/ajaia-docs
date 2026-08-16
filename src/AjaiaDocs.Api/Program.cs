@@ -9,6 +9,7 @@ using Carter;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,19 @@ builder.Services.Configure<RouteHandlerOptions>(options =>
 {
     options.ThrowOnBadRequest = true;
 });
+
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        // Render terminates TLS before forwarding the request to Kestrel.
+        // Trust only the nearest proxy's scheme; client IP and host stay untouched.
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
+        options.ForwardLimit = 1;
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+}
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -66,6 +80,11 @@ builder.Services.AddAntiforgery(options =>
 });
 
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseForwardedHeaders();
+}
 
 app.UseMiddleware<ApiBindingFailureMiddleware>();
 app.UseExceptionHandler(_ => { });

@@ -84,5 +84,22 @@ public sealed class SessionEndpointsTests(PostgresFixture postgres) : IDisposabl
             .Value.ThrowOnBadRequest);
     }
 
+    [Fact]
+    public async Task Production_antiforgery_honors_forwarded_https_scheme()
+    {
+        using var factory = new AjaiaDocsWebApplicationFactory(postgres, "Production");
+        var client = factory.CreateClient(new() { AllowAutoRedirect = false });
+        using var request = new HttpRequestMessage(HttpMethod.Get,
+            "/api/session/antiforgery");
+        request.Headers.Add("X-Forwarded-Proto", "https");
+
+        var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains(response.Headers.GetValues("Set-Cookie"), value =>
+            value.StartsWith("AjaiaDocs.Antiforgery=", StringComparison.Ordinal) &&
+            value.Contains("; secure", StringComparison.OrdinalIgnoreCase));
+    }
+
     public void Dispose() => _factory.Dispose();
 }
