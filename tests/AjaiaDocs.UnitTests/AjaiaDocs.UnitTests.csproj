@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AjaiaDocs.Api\AjaiaDocs.Api.csproj" />
     <ProjectReference Include="..\..\src\AjaiaDocs.Core\AjaiaDocs.Core.csproj" />
     <ProjectReference Include="..\..\src\AjaiaDocs.Application\AjaiaDocs.Application.csproj" />
   </ItemGroup>

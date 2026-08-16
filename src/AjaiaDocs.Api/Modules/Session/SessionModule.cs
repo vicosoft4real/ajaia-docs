@@ -33,21 +33,22 @@ public sealed class SessionModule : ICarterModule
     }
 
     private static async Task<IResult> GetSessionAsync(CurrentActor actor,
-        IUserRepository users, CancellationToken ct)
+        IUserRepository users, ResultHttpMapper mapper, CancellationToken ct)
     {
         var result = await users.GetSeededAsync(actor.UserId, ct);
         return result.IsSuccess
             ? Results.Ok(ToResponse(result.Value))
-            : result.ToHttpResult();
+            : mapper.ToHttpResult(result);
     }
 
     private static async Task<IResult> StartSessionAsync(StartSessionRequest request,
-        HttpContext context, IUserRepository users, CancellationToken ct)
+        HttpContext context, IUserRepository users, ResultHttpMapper mapper,
+        CancellationToken ct)
     {
         var result = await users.GetSeededAsync(request.UserId, ct);
         if (!result.IsSuccess)
         {
-            return result.ToHttpResult();
+            return mapper.ToHttpResult(result);
         }
 
         var user = result.Value;

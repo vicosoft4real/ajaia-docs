@@ -58,6 +58,8 @@ public sealed class ImportEndpointsTests(PostgresFixture postgres) : IAsyncLifet
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("file_too_large",
             (await response.Content.ReadFromJsonAsync<ProblemResponse>())!.Code);
+        Assert.Empty((await client.GetFromJsonAsync<List<DocumentListItemDto>>(
+            "/api/documents?scope=all"))!);
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

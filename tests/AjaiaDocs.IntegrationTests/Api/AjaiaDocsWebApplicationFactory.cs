@@ -8,12 +8,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace AjaiaDocs.IntegrationTests.Api;
 
-public sealed class AjaiaDocsWebApplicationFactory(PostgresFixture postgres)
+public sealed class AjaiaDocsWebApplicationFactory(PostgresFixture postgres,
+    string environment = "Development")
     : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.UseEnvironment("Development");
+        builder.UseEnvironment(environment);
         builder.ConfigureAppConfiguration((_, configuration) =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string?>

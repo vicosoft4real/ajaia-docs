@@ -3,6 +3,11 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using AjaiaDocs.Api.Common;
 using AjaiaDocs.IntegrationTests.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AjaiaDocs.IntegrationTests.Api;
 
@@ -59,6 +64,24 @@ public sealed class SessionEndpointsTests(PostgresFixture postgres) : IDisposabl
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.Equal("not_found",
             (await response.Content.ReadFromJsonAsync<ProblemResponse>())!.Code);
+    }
+
+    [Fact]
+    public void Production_cookie_is_secure_strict_and_eight_hour_sliding()
+    {
+        using var factory = new AjaiaDocsWebApplicationFactory(postgres, "Production");
+        var options = factory.Services
+            .GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>()
+            .Get(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        Assert.Equal("AjaiaDocs.Session", options.Cookie.Name);
+        Assert.True(options.Cookie.HttpOnly);
+        Assert.Equal(SameSiteMode.Strict, options.Cookie.SameSite);
+        Assert.Equal(CookieSecurePolicy.Always, options.Cookie.SecurePolicy);
+        Assert.Equal(TimeSpan.FromHours(8), options.ExpireTimeSpan);
+        Assert.True(options.SlidingExpiration);
+        Assert.True(factory.Services.GetRequiredService<IOptions<RouteHandlerOptions>>()
+            .Value.ThrowOnBadRequest);
     }
 
     public void Dispose() => _factory.Dispose();

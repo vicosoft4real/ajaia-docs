@@ -9,6 +9,7 @@ using Carter;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddAjaiaDocsInfrastructure(builder.Configuration);
 builder.Services.AddCarter();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<CurrentActor>();
+builder.Services.AddSingleton<ResultHttpMapper>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddAuthorization();
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -27,6 +29,10 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = StrictTextImportParser.MaxFileBytes;
+});
+builder.Services.Configure<RouteHandlerOptions>(options =>
+{
+    options.ThrowOnBadRequest = true;
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -61,6 +67,7 @@ builder.Services.AddAntiforgery(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<ApiBindingFailureMiddleware>();
 app.UseExceptionHandler(_ => { });
 app.UseDefaultFiles();
 app.UseStaticFiles();

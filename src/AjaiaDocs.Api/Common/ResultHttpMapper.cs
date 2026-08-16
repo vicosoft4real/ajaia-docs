@@ -2,17 +2,28 @@ using AjaiaDocs.Core.Common;
 
 namespace AjaiaDocs.Api.Common;
 
-public static class ResultHttpMapper
+public sealed class ResultHttpMapper(ILogger<ResultHttpMapper> logger)
 {
-    public static IResult ToHttpResult<T>(this Result<T> result,
+    public IResult ToHttpResult<T>(Result<T> result,
         int successStatusCode = StatusCodes.Status200OK)
     {
-        return result.IsSuccess
-            ? Results.Json(result.Value, statusCode: successStatusCode)
-            : Problem(result.Error);
+        if (result.IsSuccess)
+        {
+            return Results.Json(result.Value, statusCode: successStatusCode);
+        }
+
+        if (result.Error.Type == ErrorType.Failure)
+        {
+            logger.LogError("Application failure {ErrorCode}: {ErrorMessage}",
+                result.Error.Code, result.Error.Message);
+            return Problem("unexpected_failure", "An unexpected error occurred.",
+                StatusCodes.Status500InternalServerError);
+        }
+
+        return Problem(result.Error);
     }
 
-    public static IResult Problem(AjaiaError error,
+    private static IResult Problem(AjaiaError error,
         IReadOnlyDictionary<string, string[]>? errors = null) =>
         Problem(error.Code, error.Message, StatusCode(error.Type), errors);
 

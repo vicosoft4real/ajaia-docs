@@ -36,7 +36,7 @@ public sealed class DocumentModule : ICarterModule
     }
 
     private static async Task<IResult> ListAsync(string? scope, CurrentActor actor,
-        ListDocumentsHandler handler, CancellationToken ct)
+        ListDocumentsHandler handler, ResultHttpMapper mapper, CancellationToken ct)
     {
         if (!TryParseScope(scope, out var parsedScope))
         {
@@ -46,18 +46,19 @@ public sealed class DocumentModule : ICarterModule
                 new Dictionary<string, string[]> { ["scope"] = ["The scope is invalid."] });
         }
 
-        return (await handler.HandleAsync(actor.UserId,
-            new ListDocumentsQuery(parsedScope), ct)).ToHttpResult();
+        return mapper.ToHttpResult(await handler.HandleAsync(actor.UserId,
+            new ListDocumentsQuery(parsedScope), ct));
     }
 
     private static async Task<IResult> CreateAsync(CreateDocumentRequest request,
-        CurrentActor actor, CreateDocumentHandler handler, CancellationToken ct) =>
-        (await handler.HandleAsync(actor.UserId,
-            new CreateDocumentCommand(request.Title), ct))
-        .ToHttpResult(StatusCodes.Status201Created);
+        CurrentActor actor, CreateDocumentHandler handler, ResultHttpMapper mapper,
+        CancellationToken ct) =>
+        mapper.ToHttpResult(await handler.HandleAsync(actor.UserId,
+            new CreateDocumentCommand(request.Title), ct), StatusCodes.Status201Created);
 
     private static async Task<IResult> ImportAsync(HttpRequest request,
-        CurrentActor actor, ImportDocumentHandler handler, CancellationToken ct)
+        CurrentActor actor, ImportDocumentHandler handler, ResultHttpMapper mapper,
+        CancellationToken ct)
     {
         IFormCollection form;
         try
@@ -106,30 +107,33 @@ public sealed class DocumentModule : ICarterModule
 
         var result = await handler.HandleAsync(actor.UserId, file.FileName,
             destination.ToArray(), ct);
-        return result.ToHttpResult(StatusCodes.Status201Created);
+        return mapper.ToHttpResult(result, StatusCodes.Status201Created);
     }
 
     private static async Task<IResult> GetAsync(Guid id, CurrentActor actor,
-        GetDocumentHandler handler, CancellationToken ct) =>
-        (await handler.HandleAsync(actor.UserId, new GetDocumentQuery(id), ct)).ToHttpResult();
+        GetDocumentHandler handler, ResultHttpMapper mapper, CancellationToken ct) =>
+        mapper.ToHttpResult(await handler.HandleAsync(actor.UserId,
+            new GetDocumentQuery(id), ct));
 
     private static async Task<IResult> UpdateContentAsync(Guid id,
         UpdateDocumentContentRequest request, CurrentActor actor,
-        UpdateDocumentContentHandler handler, CancellationToken ct) =>
-        (await handler.HandleAsync(actor.UserId, id,
+        UpdateDocumentContentHandler handler, ResultHttpMapper mapper,
+        CancellationToken ct) =>
+        mapper.ToHttpResult(await handler.HandleAsync(actor.UserId, id,
             new UpdateDocumentContentCommand(request.ContentFormat, request.Content,
-                request.PlainText, request.ExpectedVersion), ct)).ToHttpResult();
+                request.PlainText, request.ExpectedVersion), ct));
 
     private static async Task<IResult> RenameAsync(Guid id, RenameDocumentRequest request,
-        CurrentActor actor, RenameDocumentHandler handler, CancellationToken ct) =>
-        (await handler.HandleAsync(actor.UserId, id,
-            new RenameDocumentCommand(request.Title, request.ExpectedVersion), ct)).ToHttpResult();
+        CurrentActor actor, RenameDocumentHandler handler, ResultHttpMapper mapper,
+        CancellationToken ct) =>
+        mapper.ToHttpResult(await handler.HandleAsync(actor.UserId, id,
+            new RenameDocumentCommand(request.Title, request.ExpectedVersion), ct));
 
     private static async Task<IResult> DeleteAsync(Guid id, CurrentActor actor,
-        DeleteDocumentHandler handler, CancellationToken ct)
+        DeleteDocumentHandler handler, ResultHttpMapper mapper, CancellationToken ct)
     {
         var result = await handler.HandleAsync(actor.UserId, new DeleteDocumentCommand(id), ct);
-        return result.IsSuccess ? Results.NoContent() : result.ToHttpResult();
+        return result.IsSuccess ? Results.NoContent() : mapper.ToHttpResult(result);
     }
 
     private static bool TryParseScope(string? value, out DocumentScope scope)
