@@ -16,4 +16,5 @@ databases:
   - name: ajaia-docs-postgres
     databaseName: ajaia_docs
     user: ajaia_docs
+    postgresMajorVersion: "16"
     plan: free

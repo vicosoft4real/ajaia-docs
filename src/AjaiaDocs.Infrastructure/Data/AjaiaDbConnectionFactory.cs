@@ -9,7 +9,7 @@ public sealed class AjaiaDbConnectionFactory : IAsyncDisposable
     public AjaiaDbConnectionFactory(string connectionString)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
-        _dataSource = NpgsqlDataSource.Create(connectionString);
+        _dataSource = NpgsqlDataSource.Create(PostgresConnectionString.Normalize(connectionString));
     }
 
     public async Task<NpgsqlConnection> OpenConnectionAsync(CancellationToken ct) =>
