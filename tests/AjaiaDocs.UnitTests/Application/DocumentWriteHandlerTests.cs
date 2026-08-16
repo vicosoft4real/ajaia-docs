@@ -1,3 +1,4 @@
+using System.Text;
 using AjaiaDocs.Application.Common;
 using AjaiaDocs.Application.Common.Interfaces;
 using AjaiaDocs.Application.Features.Documents;
@@ -34,6 +35,47 @@ public sealed class DocumentWriteHandlerTests
         await repository.Received(1).UpdateContentAsync(ActorId, DocumentId,
             DocumentContentDefaults.EmptyLexical, "Edited", ContentFormat.Lexical, 4,
             CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task Content_at_exact_utf8_byte_limit_is_accepted()
+    {
+        var content = new string('\u00e9', Document.MaxContentBytes / 2);
+        Assert.Equal(Document.MaxContentBytes, Encoding.UTF8.GetByteCount(content));
+        var repository = Substitute.For<IDocumentRepository>();
+        repository.UpdateContentAsync(ActorId, DocumentId, content, string.Empty,
+                ContentFormat.PlainText, 1, Arg.Any<CancellationToken>())
+            .Returns(Result<DocumentDto>.Success(Dto(version: 2)));
+        var handler = new UpdateDocumentContentHandler(repository,
+            new UpdateDocumentContentValidator());
+
+        var result = await handler.HandleAsync(ActorId, DocumentId,
+            new UpdateDocumentContentCommand("plainText", content, string.Empty, 1),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        await repository.Received(1).UpdateContentAsync(ActorId, DocumentId, content,
+            string.Empty, ContentFormat.PlainText, 1, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task Content_over_utf8_byte_limit_is_rejected_before_the_repository()
+    {
+        var content = new string('\u00e9', Document.MaxContentBytes / 2) + "a";
+        Assert.Equal(Document.MaxContentBytes + 1, Encoding.UTF8.GetByteCount(content));
+        var repository = Substitute.For<IDocumentRepository>();
+        var handler = new UpdateDocumentContentHandler(repository,
+            new UpdateDocumentContentValidator());
+
+        var result = await handler.HandleAsync(ActorId, DocumentId,
+            new UpdateDocumentContentCommand("plainText", content, string.Empty, 1),
+            CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("content_too_large", result.Error.Code);
+        await repository.DidNotReceive().UpdateContentAsync(Arg.Any<Guid>(), Arg.Any<Guid>(),
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<ContentFormat>(), Arg.Any<int>(),
+            Arg.Any<CancellationToken>());
     }
 
     public static TheoryData<string> InvalidLexicalStates => new()

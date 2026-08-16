@@ -53,7 +53,7 @@ public sealed class DocumentRepositoryWriteTests(PostgresFixture fixture) : IAsy
     }
 
     [Fact]
-    public async Task Owner_rename_increments_version_and_trims_title_from_the_handler_boundary()
+    public async Task Owner_rename_increments_version()
     {
         var result = await fixture.Documents.RenameAsync(DemoUsers.AminaId, _documentId,
             "Renamed", 1, CancellationToken.None);
@@ -88,6 +88,18 @@ public sealed class DocumentRepositoryWriteTests(PostgresFixture fixture) : IAsy
 
         Assert.False(result.IsSuccess);
         Assert.Equal("owner_required", result.Error.Code);
+        Assert.Equal("Original", (await fixture.Documents.GetAsync(DemoUsers.AminaId,
+            _documentId, CancellationToken.None)).Value.Title);
+    }
+
+    [Fact]
+    public async Task Inaccessible_rename_is_concealed_as_not_found_without_overwrite()
+    {
+        var result = await fixture.Documents.RenameAsync(DemoUsers.TayoId, _documentId,
+            "Private rename", 1, CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("not_found", result.Error.Code);
         Assert.Equal("Original", (await fixture.Documents.GetAsync(DemoUsers.AminaId,
             _documentId, CancellationToken.None)).Value.Title);
     }
