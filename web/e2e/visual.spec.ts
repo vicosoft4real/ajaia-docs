@@ -78,6 +78,9 @@ test("captures desktop and mobile library and editor evidence", async ({ page })
   await page.goto("/documents");
   await captureLibrary(page, "mobile-library.png");
 
-  await page.getByRole("link", { name: /visual review brief/i }).click();
+  await page
+    .getByRole("button", { name: /open visual review brief/i })
+    .first()
+    .click();
   await captureEditor(page, "mobile-editor.png");
 });
