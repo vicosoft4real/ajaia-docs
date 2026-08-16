@@ -24,14 +24,14 @@ export function DocumentEditorPage() {
 function LoadedEditor({ initialDocument, reload, onDeleted }: { initialDocument: DocumentDetail; reload: () => Promise<DocumentDetail | undefined>; onDeleted: () => void }) {
   const [document, setDocument] = useState(initialDocument); const [title, setTitle] = useState(initialDocument.title); const [saveState, setSaveState] = useState<SaveState>("saved"); const [dirty, setDirty] = useState(false); const [conflict, setConflict] = useState<ProblemDetails>(); const [editorKey, setEditorKey] = useState(0); const [deleteOpen, setDeleteOpen] = useState(false); const [shareOpen, setShareOpen] = useState(false);
   const [getAntiforgery] = useLazyGetAntiforgeryQuery(); const [updateContent] = useUpdateDocumentContentMutation(); const [updateTitle] = useUpdateDocumentTitleMutation();
-  const savedTitle = useRef(initialDocument.title); const initialContent = useRef({ content: initialDocument.content, plainText: initialDocument.plainText }); const coordinatorRef = useRef<DocumentSaveCoordinator>();
+  const savedTitle = useRef(initialDocument.title); const initialContent = useRef({ content: initialDocument.content, plainText: initialDocument.plainText }); const initialVersion = useRef(initialDocument.version); const coordinatorRef = useRef<DocumentSaveCoordinator>();
   const save = useMemo(() => async (intent: SaveIntent & { expectedVersion: number }) => {
     await getAntiforgery().unwrap();
     if (intent.kind === "title") return updateTitle({ id: document.id, title: intent.title, expectedVersion: intent.expectedVersion }).unwrap();
     return updateContent({ id: document.id, contentFormat: intent.contentFormat, content: intent.content, plainText: intent.plainText, expectedVersion: intent.expectedVersion }).unwrap();
   }, [document.id, getAntiforgery, updateContent, updateTitle]);
   useEffect(() => {
-    const coordinator = new DocumentSaveCoordinator({ initialVersion: document.version, save, onStateChange: (state) => { setSaveState(state); setDirty(coordinator.hasUnsavedChanges()); }, onVersionChange: (response) => { setDocument((current) => ({ ...current, ...response })); setDirty(coordinator.hasUnsavedChanges()); }, onConflict: setConflict });
+    const coordinator = new DocumentSaveCoordinator({ initialVersion: initialVersion.current, save, onStateChange: (state) => { setSaveState(state); setDirty(coordinator.hasUnsavedChanges()); }, onVersionChange: (response) => { setDocument((current) => ({ ...current, ...response })); setDirty(coordinator.hasUnsavedChanges()); }, onConflict: setConflict });
     coordinatorRef.current = coordinator; return () => { void coordinator.flush(); coordinator.dispose(); coordinatorRef.current = undefined; };
   }, [document.id, save]);
   useUnsavedChangesWarning(dirty);
