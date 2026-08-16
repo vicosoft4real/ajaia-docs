@@ -68,20 +68,28 @@ test("owner creates, formats, shares, and collaborator safely edits", async ({
   await expect(editor).toContainText("Release plan");
 
   await page.getByRole("button", { name: /^share$/i }).click();
-  await page.getByRole("button", { name: /share with chidi/i }).click();
-  await expect(page.getByText(/chidi okeke has access/i)).toBeVisible();
+  const shareDialog = page.getByRole("dialog", {
+    name: /share this document/i,
+  });
+  await shareDialog.getByRole("button", { name: /share with chidi/i }).click();
+  await expect(shareDialog.getByText(/chidi okeke has access/i)).toBeVisible();
+  await shareDialog.getByRole("button", { name: /close dialog/i }).click();
+  await expect(shareDialog).toHaveCount(0);
 
   await page.getByRole("button", { name: /switch user/i }).click();
   await page
     .getByRole("button", { name: /continue as chidi okeke/i })
     .click();
   await page.getByRole("tab", { name: /shared with me/i }).click();
-  await page.getByRole("link", { name: /launch brief/i }).click();
+  await page
+    .getByRole("button", { name: /open launch brief/i })
+    .first()
+    .click();
 
   await expect(page.getByRole("button", { name: /^share$/i })).toHaveCount(0);
   await expect(
     page.getByRole("textbox", { name: /document title/i }),
-  ).toHaveCount(0);
+  ).toHaveJSProperty("readOnly", true);
   await expect(page.getByRole("button", { name: /delete/i })).toHaveCount(0);
 
   const collaboratorEditor = page.getByRole("textbox", {
@@ -98,17 +106,23 @@ test("imports Markdown and preserves normalized formatting after an edit", async
 }) => {
   await loginAsAmina(page);
   await page.getByRole("button", { name: /import/i }).first().click();
-  await page.locator('input[type="file"]').setInputFiles(fixturePath);
-  await page.getByRole("button", { name: /^import$/i }).click();
+  const importDialog = page.getByRole("dialog", { name: /import a document/i });
+  await importDialog.getByLabel("Document file").setInputFiles(fixturePath);
+  await importDialog
+    .getByRole("button", { name: /import document/i })
+    .click();
 
   await expect(
     page.getByRole("textbox", { name: /document title/i }),
-  ).toHaveValue("Reviewer brief");
+  ).toHaveValue("reviewer-brief");
   await expect(
     page.getByRole("heading", { name: "Launch review brief" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("listitem", { name: /verify the first release journey/i }),
+    page
+      .getByRole("textbox", { name: /document content/i })
+      .locator("li")
+      .filter({ hasText: "Verify the first release journey." }),
   ).toBeVisible();
 
   const editor = page.getByRole("textbox", { name: /document content/i });
@@ -122,7 +136,9 @@ test("imports Markdown and preserves normalized formatting after an edit", async
     page.getByRole("heading", { name: "Launch review brief" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("listitem", { name: /confirm that imported markdown/i }),
+    editor.locator("li").filter({
+      hasText: "Confirm that imported Markdown becomes an editable document.",
+    }),
   ).toBeVisible();
   await expect(editor).toContainText("Normalization confirmed.");
 });
