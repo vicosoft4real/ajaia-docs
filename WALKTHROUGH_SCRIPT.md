@@ -1,8 +1,6 @@
 # Ajaia Docs walkthrough script (3–5 minutes)
 
-Use the live deployment once its URL is observed; otherwise record against the verified local Docker stack after the Chrome release gate passes.
-
-`TODO_FINALIZE: replace the environment note with the observed public URL/local evidence before recording.`
+Use the live deployment after it exists; it is not deployed at this update. Until then, record against the local Docker stack after the final Chrome release gate passes.
 
 ## 0:00–0:25 — Set the frame
 
@@ -30,7 +28,7 @@ Type a short release plan. Use the toolbar to apply bold, italic, underline, a h
 
 Refresh the page and show the saved title/content/formatting returning.
 
-`TODO_FINALIZE: verify exact visible save-state labels and the final Chrome-proven formatting sequence before recording.`
+Focused frontend gates cover this editor behavior; verify the exact visible save-state labels and formatting sequence in the final Chrome run before recording.
 
 ## 1:45–2:35 — Share and switch identity
 

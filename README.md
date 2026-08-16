@@ -6,12 +6,9 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The backend baseline at commit `95d85d0` has **66 unit tests** and **59 integration tests**: **125 verified backend tests**. The final frontend checks, Chrome journey, visual screenshots, Docker release gate, deployed URL, and final combined counts are being completed in parallel and are intentionally not claimed here.
+The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. Focused frontend gates for the foundation, library, editor, and autosave are green. The final combined frontend/release gate is still pending at this documentation update.
 
-- `TODO_FINALIZE: frontend test/typecheck/lint/build outputs and counts`
-- `TODO_FINALIZE: Chrome E2E result and committed screenshot paths`
-- `TODO_FINALIZE: full local release-gate output`
-- `TODO_FINALIZE: observed Render URL and deployed Chrome result`
+Chrome E2E execution and desktop/mobile screenshot capture remain pending the Chrome run. The Render deployment has not yet been completed, so no public URL is claimed.
 
 ## Quick start (Docker)
 
@@ -21,9 +18,7 @@ Prerequisite: Docker Desktop (or another Docker Compose v2-compatible runtime).
 docker compose up --build
 ```
 
-When the complete Docker deliverable is present, open `http://127.0.0.1:8080`, choose a demo identity, and use the document library. Stop the stack with `docker compose down`.
-
-`TODO_FINALIZE: verify this command and the local health response against the final merged Dockerfile and docker-compose.yml.`
+Open `http://127.0.0.1:8080`, choose a demo identity, and use the document library. Stop the stack with `docker compose down`.
 
 ## Developer setup
 
@@ -39,7 +34,7 @@ dotnet restore AjaiaDocs.sln
 dotnet build AjaiaDocs.sln --configuration Release --no-restore
 dotnet test AjaiaDocs.sln --configuration Release --no-build
 
-pnpm --dir web install --frozen-lockfile
+pnpm install --frozen-lockfile
 pnpm --dir web test
 pnpm --dir web typecheck
 pnpm --dir web lint
@@ -54,7 +49,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-These are the final release-gate commands from the approved implementation plan. The web application, Compose files, Playwright configuration, and their observed results are parallel deliverables; see the status markers above before treating them as completed.
+These are the final release-gate commands. The Docker, frontend, and Playwright configuration are present; the final combined release-gate results and Chrome evidence are pending.
 
 ## Demo identities
 
@@ -73,7 +68,7 @@ Select an identity from **Demo access for reviewers**. The server only issues a 
 - Owner and shared document library views
 - Blank document creation and owner-only rename/delete/share/revoke actions
 - UTF-8 `.txt` and `.md` imports up to **1 MiB (1,048,576 bytes)**
-- Rich-text editing, formatting, autosave, and refresh persistence (final UI verification pending)
+- Rich-text editing, formatting, autosave, and refresh persistence (focused frontend gates are green; final combined verification is pending)
 - Collaborator content edits; collaborators cannot rename, share, revoke, or delete
 - PostgreSQL persistence and version-based conflict detection
 
@@ -81,7 +76,7 @@ Imports are checked server-side by filename extension, byte size, and strict UTF
 
 ## Deployment and reviewer caveats
 
-Live application URL: `TODO_FINALIZE: AJAIA_DEPLOY_URL`
+Live application URL: not deployed yet.
 
 The approved Render Blueprint uses one Docker web service and PostgreSQL. On Render’s free tier, the web service may cold-start after 15 minutes of inactivity and the database may expire after 30 days. Document data belongs in PostgreSQL, not the web service filesystem.
 

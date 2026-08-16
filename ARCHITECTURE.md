@@ -87,7 +87,7 @@ The editor save coordinator debounces changes, permits one request at a time, co
 
 The planned multi-stage Docker image builds the Vite SPA, publishes the API, and copies `web/dist` into the API’s static assets. The container listens on the platform `PORT`; the Render Blueprint provides a Docker web service, a PostgreSQL database connection, production environment configuration, and `/health` as its health endpoint.
 
-`TODO_FINALIZE: confirm Dockerfile, Compose, Render Blueprint, and deployed health check in the final merged source.`
+The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Render service has not yet been deployed or health-checked publicly.
 
 ## Deliberate scope cuts
 

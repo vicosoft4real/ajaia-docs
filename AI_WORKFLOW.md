@@ -39,13 +39,9 @@ At the documentation baseline (backend commit `95d85d0`), the observed backend t
 
 The backend tests cover domain/access decisions, application validation and sharing/import behavior, PostgreSQL migration/persistence behavior, session and antiforgery routes, and owner-to-collaborator HTTP journeys.
 
-The following work is intentionally recorded as pending, not inferred from the plan:
+Focused frontend gates for the foundation, library, editor, and autosave are green. The final combined frontend test/typecheck/lint/build gate remains pending during this update.
 
-- `TODO_FINALIZE: exact frontend test result, typecheck, lint, and production-build outputs`
-- `TODO_FINALIZE: exact Google Chrome E2E command/result, including import and collaboration journey`
-- `TODO_FINALIZE: desktop/mobile screenshot inspection, focus/overflow/console-error evidence`
-- `TODO_FINALIZE: Docker health check and complete release-gate output`
-- `TODO_FINALIZE: deployed Render health check and Chrome run against its observed URL`
+The Google Chrome E2E journey, desktop/mobile screenshot inspection (including focus, overflow, and console-error evidence), local Docker health evidence, and full release-gate output remain pending. Render deployment, its public health check, and the Chrome run against the public origin have not been performed.
 
 ## Quality guardrails
 
