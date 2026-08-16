@@ -14,7 +14,11 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
         await using var connection = await connections.OpenConnectionAsync(ct);
         var row = await connection.QuerySingleOrDefaultAsync<UserRow>(new CommandDefinition(
             """
-            SELECT id AS Id, email AS Email, display_name AS DisplayName, created_at AS CreatedAt
+            SELECT id AS Id,
+                   email AS Email,
+                   display_name AS DisplayName,
+                   avatar_color AS AvatarColor,
+                   created_at AS CreatedAt
             FROM app_users
             WHERE id = @UserId AND is_seeded = true
             """, new { UserId = userId }, cancellationToken: ct));
@@ -82,6 +86,7 @@ public sealed class UserRepository(AjaiaDbConnectionFactory connections) : IUser
         ErrorType.NotFound);
 
     private static User ToUser(UserRow row) => new(row.Id, row.Email, row.DisplayName,
+        row.AvatarColor,
         new DateTimeOffset(DateTime.SpecifyKind(row.CreatedAt, DateTimeKind.Utc)));
 
     private static ShareCandidateDto ToCandidate(UserRow row) => new(row.Id, row.DisplayName,
