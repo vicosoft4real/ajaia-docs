@@ -85,11 +85,13 @@ The editor save coordinator debounces changes, permits one request at a time, co
 
 ## One-origin deployment
 
-The planned multi-stage Docker image builds the Vite SPA, publishes the API, and copies `web/dist` into the API’s static assets. The container listens on the platform `PORT`; the Render Blueprint provides a Docker web service, a PostgreSQL database connection, production environment configuration, and `/health` as its health endpoint.
+The multi-stage Docker image builds the Vite SPA, publishes the API, and copies `web/dist` into the API’s static assets. The container listens on the platform `PORT`; the Render Blueprint provides a Docker web service, a PostgreSQL database connection, production environment configuration, and `/health` as its health endpoint.
 
-The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Docker image rebuilt successfully, the Compose PostgreSQL and API services are running locally, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors, and the responsive visual spec passed 1/1 with four inspected screenshots.
+The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The final backend gate passed 75 unit and 60 integration tests (135 total). The Docker image rebuilt successfully, the Compose PostgreSQL and API services are running locally, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors, and the responsive visual spec passed 1/1 with four inspected screenshots.
 
-The Render service is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), running merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`. Its `/health` endpoint returned `{"status":"healthy"}` and `/` returned HTTP `200` with `text/html`; production startup logs are live. The PostgreSQL 16 free database is available through **2026-09-15**. The service can cold-start after idle time, and a restart can invalidate authentication cookies because the free instance lacks a persistent ASP.NET Core Data Protection key ring; PostgreSQL document data persists. A Chrome journey against the deployed origin remains unobserved because the needed browser-extension capability is unavailable.
+The Render service is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), running merged `main` commit `28f989dc2bf724b9418e3e7beda102774c6844fd`. Its `/health` endpoint returned `{"status":"healthy"}` and `/` returned HTTP `200` with `text/html`. The live authentication sequence returned 200 from `GET /api/session/antiforgery` with a `Secure`, `SameSite=Strict`, `HttpOnly` cookie, 200 from `POST /api/session`, and 200 from `GET /api/session` as Amina. An installed-Google-Chrome login reached `/documents`, fully loaded **Work in progress**, produced zero browser errors, and was visually inspected.
+
+The PostgreSQL 16 free database is available through **2026-09-15**. The service can cold-start after idle time, and a restart can invalidate authentication cookies because the free instance lacks a persistent ASP.NET Core Data Protection key ring; PostgreSQL document data persists.
 
 ## Deliberate scope cuts
 
@@ -99,6 +101,5 @@ These omissions keep the evaluated slice honest: reliable persistence, clear aut
 
 ## Next work
 
-1. Run the Chrome journey against the public origin when the required browser-extension capability becomes available; record only its observed result.
-2. Complete the final archive rebuild and Drive upload; the walkthrough recording is already available on [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f).
-3. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.
+1. Enable public link sharing manually for the already-uploaded [11-item Google Drive folder](https://drive.google.com/drive/folders/1iEw1uCn9KWcOyvykQbl_SdSzuhVxEPsd). Google Drive created it private by default, and interactive Chrome control is unavailable because the required extension is not installed.
+2. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.

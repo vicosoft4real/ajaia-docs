@@ -6,13 +6,13 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The final backend release gate verified **75 unit tests** and **59 integration tests**: **134 backend tests**. The full frontend suite verified **22 files / 47 tests**, and typecheck, lint, and production build passed. The Docker image rebuilt successfully; Docker Compose has PostgreSQL and the API running, and `/health` returned `{"status":"healthy"}`.
+The final backend release gate verified **75 unit tests** and **60 integration tests**: **135 backend tests**. The full frontend suite verified **22 files / 47 tests**, and typecheck, lint, and production build passed. The Docker image rebuilt successfully; Docker Compose has PostgreSQL and the API running, and `/health` returned `{"status":"healthy"}`.
 
 The clean-state installed-Google-Chrome journey passed **2/2** (create/format/share/collaborator flow and Markdown import) with no browser errors. The visual spec also passed **1/1**; all four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844.
 
-The live service is [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), deployed from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`. Its `/health` endpoint returned exact JSON `{"status":"healthy"}`; the root route returned HTTP `200` with `text/html`, and production startup logs are live. A deployed Chrome journey is not claimed because the browser-extension capability needed for that run is unavailable in this environment.
+The live service is [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), deployed from merged `main` commit `28f989dc2bf724b9418e3e7beda102774c6844fd`. Its `/health` endpoint returned exact JSON `{"status":"healthy"}` and the root route returned HTTP `200` with `text/html`. A live authentication probe observed `GET /api/session/antiforgery` returning 200 with a `Secure`, `SameSite=Strict`, `HttpOnly` cookie, `POST /api/session` returning 200, and `GET /api/session` returning 200 as Amina. An installed-Google-Chrome live login reached `/documents`, fully loaded **Work in progress**, produced zero browser errors, and was visually inspected.
 
-The recorded walkthrough is available on [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). Rebuilding the final archive and uploading the archive, screenshots, and video-link file to Google Drive remain candidate-owned handoffs.
+The recorded walkthrough is available on [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The submission package upload is complete: the [Google Drive folder](https://drive.google.com/drive/folders/1iEw1uCn9KWcOyvykQbl_SdSzuhVxEPsd) contains 11 items. Google Drive created the folder private by default; enabling public link sharing remains a manual step because interactive Chrome control is unavailable in this environment.
 
 A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing regression was fixed in `a9a2d57`; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed.
 
@@ -55,7 +55,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-The backend/frontend gates, Docker rebuild and health check, local Chrome journey/visual evidence, live Render health/root checks, and recorded walkthrough above have been observed. The remaining handoffs are a deployed Chrome run when the required extension is available, rebuilding the final archive, and the candidate-owned Drive upload.
+The backend/frontend gates, Docker rebuild and health check, local Chrome journey/visual evidence, live Render health/root/authentication checks, installed-Chrome live login and visual inspection, recorded walkthrough, and 11-item Drive upload above have been observed. The remaining delivery action is to enable public link sharing for the currently private Drive folder manually.
 
 ## Demo identities
 
@@ -84,7 +84,7 @@ Imports are checked server-side by filename extension, byte size, and strict UTF
 
 Live application URL: [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com)
 
-The Render service is live from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; `/health` returned `{"status":"healthy"}` and `/` returned HTTP `200` with `text/html`. The approved Render Blueprint uses one Docker web service and PostgreSQL. The free web service may cold-start after 15 minutes of inactivity; the PostgreSQL 16 free database is currently available through **2026-09-15**. Document data belongs in PostgreSQL, not the web service filesystem.
+The Render service is live from merged `main` commit `28f989dc2bf724b9418e3e7beda102774c6844fd`; `/health` returned `{"status":"healthy"}`, `/` returned HTTP `200` with `text/html`, and the live login/session sequence succeeded as Amina. The approved Render Blueprint uses one Docker web service and PostgreSQL. The free web service may cold-start after 15 minutes of inactivity; the PostgreSQL 16 free database is currently available through **2026-09-15**. Document data belongs in PostgreSQL, not the web service filesystem.
 
 The session cookie is HttpOnly, `SameSite=Strict`, secure in production, and has an eight-hour sliding expiry. A restart can invalidate demo login cookies because the free instance has no persistent ASP.NET Core Data Protection key ring; simply select the same seeded identity again. Persisted document data remains in PostgreSQL.
 
@@ -98,4 +98,4 @@ Critical/high JavaScript advisories were patched. `pnpm audit --prod` still repo
 - [3–5 minute walkthrough script](WALKTHROUGH_SCRIPT.md)
 - [Recorded walkthrough (Loom)](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f)
 
-The tracking issue remains open until the implementation PR merges: <https://github.com/vicosoft4real/ajaia-docs/issues/1>.
+Design and implementation were tracked in [GitHub issue #1](https://github.com/vicosoft4real/ajaia-docs/issues/1) through the merge.

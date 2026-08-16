@@ -58,7 +58,7 @@ Mention the three seeded identities and the Render caveat: free services can col
 
 > “We deliberately excluded CRDTs, presence, comments, version history, `.docx`/PDF workflows, and broad workspace features so the delivered slice could be tested and honestly demonstrated.”
 
-> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 134 verified backend tests, 22 frontend files / 47 tests plus typecheck/lint/build, a locally healthy Docker stack, a 2/2 clean Chrome product journey, and a 1/1 visual pass with inspected responsive screenshots. The live Render service has observed health and root responses; a deployed Chrome run is not claimed because the required extension is unavailable.”
+> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 135 verified backend tests, 22 frontend files / 47 tests plus typecheck/lint/build, a locally healthy Docker stack, a 2/2 clean Chrome product journey, and a 1/1 visual pass with inspected responsive screenshots. The live Render authentication flow returned 200 through Amina’s session, and an installed-Chrome login reached the fully loaded document library with zero browser errors.”
 
 Close on the submission materials: README for setup, architecture and AI workflow notes, screenshots, and the recorded [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f).
 
@@ -68,4 +68,4 @@ Close on the submission materials: README for setup, architecture and AI workflo
 - Keep the walkthrough to 3–5 minutes; do not imply live cursors or automatic merge.
 - Show an actual save then refresh, and an actual identity switch after sharing.
 - Do not expose secrets; the seeded `.example.test` identities are intentional demo data.
-- The recording is complete at [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f); rebuild the final archive and complete the Drive upload before submission.
+- The recording is complete at [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f), and all 11 items are uploaded to [Google Drive](https://drive.google.com/drive/folders/1iEw1uCn9KWcOyvykQbl_SdSzuhVxEPsd). The folder is private by default; enable public link sharing manually because Chrome control is unavailable without its extension.
