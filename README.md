@@ -6,9 +6,9 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. Focused frontend gates for the foundation, library, editor, and autosave are green. The final combined frontend/release gate is still pending at this documentation update.
+The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The integrated frontend gate verified **46 tests**, typecheck, lint, and production build. The Docker image built and Docker Compose has PostgreSQL and the API running.
 
-Chrome E2E execution and desktop/mobile screenshot capture remain pending the Chrome run. The Render deployment has not yet been completed, so no public URL is claimed.
+The Google Chrome visual run is being rerun, so its final E2E/visual result and screenshot evidence are not claimed yet. The Render deployment has not been completed, so no public URL is claimed.
 
 ## Quick start (Docker)
 
@@ -49,7 +49,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-These are the final release-gate commands. The Docker, frontend, and Playwright configuration are present; the final combined release-gate results and Chrome evidence are pending.
+The backend and frontend checks above have been observed, and the Docker image/runtime has been started. The Chrome visual rerun is the remaining active local release-evidence step.
 
 ## Demo identities
 
@@ -68,7 +68,7 @@ Select an identity from **Demo access for reviewers**. The server only issues a 
 - Owner and shared document library views
 - Blank document creation and owner-only rename/delete/share/revoke actions
 - UTF-8 `.txt` and `.md` imports up to **1 MiB (1,048,576 bytes)**
-- Rich-text editing, formatting, autosave, and refresh persistence (focused frontend gates are green; final combined verification is pending)
+- Rich-text editing, formatting, autosave, and refresh persistence (covered by the 46-test frontend gate; Chrome visual evidence is being rerun)
 - Collaborator content edits; collaborators cannot rename, share, revoke, or delete
 - PostgreSQL persistence and version-based conflict detection
 

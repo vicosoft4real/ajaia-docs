@@ -39,9 +39,9 @@ At the documentation baseline (backend commit `95d85d0`), the observed backend t
 
 The backend tests cover domain/access decisions, application validation and sharing/import behavior, PostgreSQL migration/persistence behavior, session and antiforgery routes, and owner-to-collaborator HTTP journeys.
 
-Focused frontend gates for the foundation, library, editor, and autosave are green. The final combined frontend test/typecheck/lint/build gate remains pending during this update.
+The integrated frontend release gate verified **46 tests**, `pnpm --dir web typecheck`, `pnpm --dir web lint`, and `pnpm --dir web build`. The Docker image built and Docker Compose has PostgreSQL and the API running locally.
 
-The Google Chrome E2E journey, desktop/mobile screenshot inspection (including focus, overflow, and console-error evidence), local Docker health evidence, and full release-gate output remain pending. Render deployment, its public health check, and the Chrome run against the public origin have not been performed.
+The Google Chrome visual journey is currently being rerun. Its E2E/visual result, desktop/mobile screenshot inspection (including focus, overflow, and console-error evidence), and final combined release evidence are not claimed until that rerun finishes. Render deployment, its public health check, and the Chrome run against the public origin have not been performed.
 
 ## Quality guardrails
 

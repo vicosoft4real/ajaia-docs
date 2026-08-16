@@ -87,7 +87,7 @@ The editor save coordinator debounces changes, permits one request at a time, co
 
 The planned multi-stage Docker image builds the Vite SPA, publishes the API, and copies `web/dist` into the API’s static assets. The container listens on the platform `PORT`; the Render Blueprint provides a Docker web service, a PostgreSQL database connection, production environment configuration, and `/health` as its health endpoint.
 
-The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Render service has not yet been deployed or health-checked publicly.
+The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Docker image has built, and the Compose PostgreSQL and API services are running locally. The Render service has not yet been deployed or health-checked publicly.
 
 ## Deliberate scope cuts
 
@@ -97,7 +97,7 @@ These omissions keep the evaluated slice honest: reliable persistence, clear aut
 
 ## Next work
 
-1. Finish and record the frontend/Chrome release evidence, including responsive screenshots and console-error checks.
+1. Finish the active Google Chrome visual rerun and record responsive screenshots plus console-error checks only if it passes.
 2. Deploy the Render Blueprint, verify `/health`, and rerun the Chrome journey against the public origin.
 3. Complete the human-owned video recording and Drive upload.
 4. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.

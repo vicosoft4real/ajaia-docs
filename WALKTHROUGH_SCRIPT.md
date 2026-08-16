@@ -28,7 +28,7 @@ Type a short release plan. Use the toolbar to apply bold, italic, underline, a h
 
 Refresh the page and show the saved title/content/formatting returning.
 
-Focused frontend gates cover this editor behavior; verify the exact visible save-state labels and formatting sequence in the final Chrome run before recording.
+The integrated frontend gate verified this editor surface through 46 tests, typecheck, lint, and production build. Verify the exact visible save-state labels and formatting sequence in the active Chrome visual rerun before recording.
 
 ## 1:45–2:35 — Share and switch identity
 
@@ -58,7 +58,7 @@ Mention the three seeded identities and the Render caveat: free services can col
 
 > “We deliberately excluded CRDTs, presence, comments, version history, `.docx`/PDF workflows, and broad workspace features so the delivered slice could be tested and honestly demonstrated.”
 
-> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The final package records observed backend verification and will include the final frontend, Chrome, Docker, and deployment evidence.”
+> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 125 verified backend tests, 46 frontend tests plus typecheck/lint/build, and a locally running Docker stack. Chrome visual evidence and deployment evidence are only added after their checks complete.”
 
 Close on the submission materials: README for setup, architecture and AI workflow notes, screenshots, and the human-owned video link.
 

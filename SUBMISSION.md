@@ -9,8 +9,9 @@ This is the evidence-led submission package for Ajaia Docs. It deliberately sepa
 | Source and approved design/implementation plan | Present in repository |
 | Backend baseline | Verified at `95d85d0`: 66 unit + 59 integration = 125 tests |
 | Reviewer documentation | Present: README, architecture, AI workflow, and walkthrough script |
-| Focused frontend gates | Green for foundation, library, editor, and autosave; final combined frontend/release gate pending |
-| Desktop/mobile Chrome screenshots | Pending Chrome run and visual validation |
+| Frontend release gate | 46 tests passed; typecheck, lint, and production build passed |
+| Docker runtime | Docker image built; Compose PostgreSQL and API services running locally |
+| Desktop/mobile Chrome screenshots | Chrome visual run is being rerun; do not treat unfinalized output as evidence |
 | Render public URL and deployed E2E evidence | Not deployed yet |
 | Human walkthrough recording URL | Candidate-owned; `WALKTHROUGH_VIDEO_URL.txt` contains the pending-recording handoff until a final unlisted URL exists |
 | Archive and Google Drive upload | Candidate-owned after final merge; not yet created/uploaded |
@@ -23,7 +24,7 @@ The repository currently includes:
 - React/Vite frontend source, frontend tests, and Chrome E2E tests
 - Dockerfile, Docker Compose configuration, Render Blueprint, and CI workflow
 - `README.md`, `ARCHITECTURE.md`, `AI_WORKFLOW.md`, this document, and `WALKTHROUGH_SCRIPT.md`
-- Chrome E2E/visual test sources; desktop and mobile evidence will be added after the Chrome capture
+- Chrome E2E/visual test sources; desktop and mobile evidence will be added only after the active Chrome visual rerun passes
 
 The final merged archive has not yet been created or inspected.
 
@@ -55,13 +56,13 @@ These are seeded demo identities, not production accounts. No password is requir
 - Collaborator document access and content editing, while owner-only actions return a protected `owner_required` failure
 - Concealed inaccessible documents (`404`) and sanitized structured API errors
 
-Focused frontend gates cover the foundation, library, editor, and autosave. Final combined frontend verification, visual accessibility inspection, and the Chrome journey remain pending.
+The integrated frontend gate verified 46 tests, typecheck, lint, and production build. The Docker image built and local Compose PostgreSQL/API services are running. The Chrome visual rerun, visual accessibility inspection, and final screenshot evidence remain in progress and are not yet a success claim.
 
 ## Verified tests
 
 The observed backend baseline is **66 unit tests + 59 integration tests = 125**. Those counts are intentionally scoped to the backend commit `95d85d0`.
 
-The final combined frontend and Chrome counts will be recorded only after the full release gate runs against the final merged source.
+The observed frontend evidence is **46 tests**, plus passed typecheck, lint, and production build. Chrome counts/results will be recorded only after the active visual rerun completes successfully.
 
 ## Incomplete handoffs that must remain human-owned
 
@@ -73,8 +74,7 @@ The tracking issue stays open until the implementation PR merges. It must not be
 
 ## Next 2–4 hours
 
-1. Finish the frontend, then run frontend unit tests, typecheck, lint, and production build.
-2. Build the full Docker stack, check `/health`, run the Chrome journey in Google Chrome, and inspect desktop/mobile screenshots for overflow, keyboard focus, and console errors.
-3. Complete a requirements review and a code-quality/security/accessibility review; add regression tests for accepted findings and rerun the full gate.
-4. Deploy the Render Blueprint, capture the exact public URL, and repeat the Chrome journey against it.
-5. Complete the human recording/upload handoff, merge only after passing checks, then create and inspect the final archive.
+1. Finish the active Google Chrome visual rerun; inspect desktop/mobile screenshots for overflow, keyboard focus, and console errors only after it passes.
+2. Complete a requirements review and a code-quality/security/accessibility review; add regression tests for accepted findings and rerun the affected/full gates.
+3. Deploy the Render Blueprint, capture the exact public URL, and repeat the Chrome journey against it.
+4. Complete the candidate-owned recording/upload handoff, merge only after passing checks, then create and inspect the final archive.
