@@ -4,6 +4,7 @@ using AjaiaDocs.Application.Features.Documents;
 using AjaiaDocs.Core.Common;
 using AjaiaDocs.Core.Documents;
 using Dapper;
+using Npgsql;
 
 namespace AjaiaDocs.Infrastructure.Data.Repositories;
 
@@ -120,16 +121,148 @@ public sealed class DocumentRepository(AjaiaDbConnectionFactory connections) : I
             : Result<DocumentDto>.Success(ToDocument(row));
     }
 
-    public Task<Result<DocumentDto>> UpdateContentAsync(Guid actorId, Guid documentId,
+    public async Task<Result<DocumentDto>> UpdateContentAsync(Guid actorId, Guid documentId,
         string content, string plainText, ContentFormat format, int expectedVersion,
-        CancellationToken ct) => throw new NotSupportedException("Content updates are implemented in Task 4.");
+        CancellationToken ct)
+    {
+        await using var connection = await connections.OpenConnectionAsync(ct);
+        var row = await connection.QuerySingleOrDefaultAsync<DocumentRow>(new CommandDefinition(
+            """
+            WITH updated AS (
+                UPDATE documents AS d
+                SET content = @Content,
+                    content_format = @ContentFormat,
+                    plain_text = @PlainText,
+                    version = d.version + 1,
+                    updated_at = @UpdatedAt
+                WHERE d.id = @DocumentId
+                  AND d.version = @ExpectedVersion
+                  AND (d.owner_id = @ActorId OR EXISTS (
+                      SELECT 1
+                      FROM document_shares access_share
+                      WHERE access_share.document_id = d.id
+                        AND access_share.user_id = @ActorId))
+                RETURNING d.*
+            )
+            SELECT d.id AS Id,
+                   d.owner_id AS OwnerId,
+                   d.title AS Title,
+                   d.content_format AS ContentFormat,
+                   d.content AS Content,
+                   d.plain_text AS PlainText,
+                   d.version AS Version,
+                   d.created_at AS CreatedAt,
+                   d.updated_at AS UpdatedAt,
+                   owner.display_name AS OwnerDisplayName,
+                   owner.email AS OwnerEmail,
+                   owner.avatar_color AS OwnerAvatarColor,
+                   d.owner_id = @ActorId AS IsOwner
+            FROM updated d
+            JOIN app_users owner ON owner.id = d.owner_id;
+            """, new
+            {
+                ActorId = actorId,
+                DocumentId = documentId,
+                Content = content,
+                PlainText = plainText,
+                ContentFormat = ToStorageValue(format),
+                ExpectedVersion = expectedVersion,
+                UpdatedAt = DateTime.UtcNow
+            }, cancellationToken: ct));
 
-    public Task<Result<DocumentDto>> RenameAsync(Guid actorId, Guid documentId, string title,
-        int expectedVersion, CancellationToken ct) =>
-        throw new NotSupportedException("Renames are implemented in Task 4.");
+        if (row is not null)
+        {
+            return Result<DocumentDto>.Success(ToDocument(row));
+        }
 
-    public Task<Result<bool>> DeleteAsync(Guid actorId, Guid documentId, CancellationToken ct) =>
-        throw new NotSupportedException("Deletion is implemented in Task 4.");
+        var state = await GetAccessibleWriteStateAsync(connection, actorId, documentId, ct);
+        return Result<DocumentDto>.Failure(state is null ? NotFound() : Conflict());
+    }
+
+    public async Task<Result<DocumentDto>> RenameAsync(Guid actorId, Guid documentId, string title,
+        int expectedVersion, CancellationToken ct)
+    {
+        await using var connection = await connections.OpenConnectionAsync(ct);
+        var row = await connection.QuerySingleOrDefaultAsync<DocumentRow>(new CommandDefinition(
+            """
+            WITH updated AS (
+                UPDATE documents AS d
+                SET title = @Title,
+                    version = d.version + 1,
+                    updated_at = @UpdatedAt
+                WHERE d.id = @DocumentId
+                  AND d.owner_id = @ActorId
+                  AND d.version = @ExpectedVersion
+                RETURNING d.*
+            )
+            SELECT d.id AS Id,
+                   d.owner_id AS OwnerId,
+                   d.title AS Title,
+                   d.content_format AS ContentFormat,
+                   d.content AS Content,
+                   d.plain_text AS PlainText,
+                   d.version AS Version,
+                   d.created_at AS CreatedAt,
+                   d.updated_at AS UpdatedAt,
+                   owner.display_name AS OwnerDisplayName,
+                   owner.email AS OwnerEmail,
+                   owner.avatar_color AS OwnerAvatarColor,
+                   true AS IsOwner
+            FROM updated d
+            JOIN app_users owner ON owner.id = d.owner_id;
+            """, new
+            {
+                ActorId = actorId,
+                DocumentId = documentId,
+                Title = title,
+                ExpectedVersion = expectedVersion,
+                UpdatedAt = DateTime.UtcNow
+            }, cancellationToken: ct));
+
+        if (row is not null)
+        {
+            return Result<DocumentDto>.Success(ToDocument(row));
+        }
+
+        var state = await GetAccessibleWriteStateAsync(connection, actorId, documentId, ct);
+        if (state is null)
+        {
+            return Result<DocumentDto>.Failure(NotFound());
+        }
+
+        return Result<DocumentDto>.Failure(state.IsOwner ? Conflict() : OwnerRequired());
+    }
+
+    public async Task<Result<bool>> DeleteAsync(Guid actorId, Guid documentId, CancellationToken ct)
+    {
+        await using var connection = await connections.OpenConnectionAsync(ct);
+        var deleted = await connection.ExecuteAsync(new CommandDefinition(
+            """
+            DELETE FROM documents
+            WHERE id = @DocumentId
+              AND owner_id = @ActorId;
+            """, new { ActorId = actorId, DocumentId = documentId }, cancellationToken: ct));
+
+        if (deleted == 1)
+        {
+            return Result<bool>.Success(true);
+        }
+
+        var state = await GetAccessibleWriteStateAsync(connection, actorId, documentId, ct);
+        return Result<bool>.Failure(state is { IsOwner: false } ? OwnerRequired() : NotFound());
+    }
+
+    private static async Task<RepositoryWriteResult?> GetAccessibleWriteStateAsync(
+        NpgsqlConnection connection, Guid actorId, Guid documentId, CancellationToken ct) =>
+        await connection.QuerySingleOrDefaultAsync<RepositoryWriteResult>(new CommandDefinition(
+            $"""
+            SELECT true AS DocumentExists,
+                   d.owner_id = @ActorId AS IsOwner,
+                   d.version AS CurrentVersion
+            FROM documents d
+            WHERE d.id = @DocumentId
+              AND {AccessiblePredicate};
+            """, new { ActorId = actorId, DocumentId = documentId }, cancellationToken: ct));
 
     private static DocumentListItemDto ToListItem(DocumentRow row) => new(row.Id, row.OwnerId,
         row.Title, row.ContentFormat, row.PlainText, row.Version, AsOffset(row.UpdatedAt),
@@ -156,6 +289,12 @@ public sealed class DocumentRepository(AjaiaDbConnectionFactory connections) : I
 
     private static AjaiaError NotFound() => new("not_found", "The document was not found.",
         ErrorType.NotFound);
+
+    private static AjaiaError OwnerRequired() => new("owner_required",
+        "Only the document owner can perform this action.", ErrorType.Forbidden);
+
+    private static AjaiaError Conflict() => new("conflict", "The document has changed.",
+        ErrorType.Conflict);
 
     private sealed class DocumentRow
     {
