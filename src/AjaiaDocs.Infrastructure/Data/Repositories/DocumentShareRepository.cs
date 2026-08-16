@@ -14,7 +14,9 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
         Guid documentId, CancellationToken ct)
     {
         await using var connection = await connections.OpenConnectionAsync(ct);
-        var authorization = await AuthorizeOwnerAsync(connection, actorId, documentId, ct);
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        var authorization = await AuthorizeOwnerAsync(connection, transaction, actorId,
+            documentId, ct);
         if (!authorization.IsSuccess)
         {
             return Result<IReadOnlyList<DocumentShareDto>>.Failure(authorization.Error);
@@ -32,30 +34,36 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
             JOIN app_users collaborator ON collaborator.id = share.user_id
             WHERE share.document_id = @DocumentId
             ORDER BY collaborator.display_name, collaborator.id;
-            """, new { DocumentId = documentId }, cancellationToken: ct));
+            """, new { DocumentId = documentId }, transaction: transaction,
+            cancellationToken: ct));
 
-        return Result<IReadOnlyList<DocumentShareDto>>.Success(rows.Select(ToDto).ToArray());
+        var shares = rows.Select(ToDto).ToArray();
+        await transaction.CommitAsync(ct);
+        return Result<IReadOnlyList<DocumentShareDto>>.Success(shares);
     }
 
     public async Task<Result<DocumentShareDto>> GrantAsync(Guid actorId, Guid documentId,
         Guid targetUserId, DateTimeOffset now, CancellationToken ct)
     {
         await using var connection = await connections.OpenConnectionAsync(ct);
-        var authorization = await AuthorizeOwnerAsync(connection, actorId, documentId, ct);
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        var authorization = await AuthorizeOwnerAsync(connection, transaction, actorId,
+            documentId, ct);
         if (!authorization.IsSuccess)
         {
             return Result<DocumentShareDto>.Failure(authorization.Error);
         }
 
-        var targetExists = await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+        var target = await connection.QuerySingleOrDefaultAsync<UserLockRow>(new CommandDefinition(
             """
-            SELECT EXISTS (
-                SELECT 1
-                FROM app_users
-                WHERE id = @TargetUserId
-                  AND is_seeded = true);
-            """, new { TargetUserId = targetUserId }, cancellationToken: ct));
-        if (!targetExists)
+            SELECT id AS Id
+            FROM app_users
+            WHERE id = @TargetUserId
+              AND is_seeded = true
+            FOR KEY SHARE;
+            """, new { TargetUserId = targetUserId }, transaction: transaction,
+            cancellationToken: ct));
+        if (target is null)
         {
             return Result<DocumentShareDto>.Failure(UserNotFound());
         }
@@ -85,9 +93,11 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
                     DocumentId = documentId,
                     TargetUserId = targetUserId,
                     CreatedAt = now.UtcDateTime
-                }, cancellationToken: ct));
+                }, transaction: transaction, cancellationToken: ct));
 
-            return Result<DocumentShareDto>.Success(ToDto(row));
+            var share = ToDto(row);
+            await transaction.CommitAsync(ct);
+            return Result<DocumentShareDto>.Success(share);
         }
         catch (PostgresException exception) when (exception.SqlState == "23505")
         {
@@ -97,13 +107,22 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
         {
             return Result<DocumentShareDto>.Failure(SelfShare());
         }
+        catch (PostgresException exception) when (exception.SqlState == "23503")
+        {
+            return Result<DocumentShareDto>.Failure(
+                exception.ConstraintName == "document_shares_user_id_fkey"
+                    ? UserNotFound()
+                    : NotFound());
+        }
     }
 
     public async Task<Result<bool>> RevokeAsync(Guid actorId, Guid documentId,
         Guid targetUserId, CancellationToken ct)
     {
         await using var connection = await connections.OpenConnectionAsync(ct);
-        var authorization = await AuthorizeOwnerAsync(connection, actorId, documentId, ct);
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        var authorization = await AuthorizeOwnerAsync(connection, transaction, actorId,
+            documentId, ct);
         if (!authorization.IsSuccess)
         {
             return Result<bool>.Failure(authorization.Error);
@@ -115,15 +134,17 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
             WHERE document_id = @DocumentId
               AND user_id = @TargetUserId;
             """, new { DocumentId = documentId, TargetUserId = targetUserId },
-            cancellationToken: ct));
+            transaction: transaction, cancellationToken: ct));
 
-        return deleted == 1
+        var result = deleted == 1
             ? Result<bool>.Success(true)
             : Result<bool>.Failure(ShareNotFound());
+        await transaction.CommitAsync(ct);
+        return result;
     }
 
     private static async Task<Result<bool>> AuthorizeOwnerAsync(NpgsqlConnection connection,
-        Guid actorId, Guid documentId, CancellationToken ct)
+        NpgsqlTransaction transaction, Guid actorId, Guid documentId, CancellationToken ct)
     {
         var access = await connection.QuerySingleOrDefaultAsync<DocumentAccessRow>(
             new CommandDefinition(
@@ -135,8 +156,10 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
                            WHERE actor_share.document_id = document.id
                              AND actor_share.user_id = @ActorId) AS HasShare
                 FROM documents document
-                WHERE document.id = @DocumentId;
-                """, new { ActorId = actorId, DocumentId = documentId }, cancellationToken: ct));
+                WHERE document.id = @DocumentId
+                FOR KEY SHARE OF document;
+                """, new { ActorId = actorId, DocumentId = documentId },
+                transaction: transaction, cancellationToken: ct));
         if (access is null)
         {
             return Result<bool>.Failure(NotFound());
@@ -188,5 +211,10 @@ public sealed class DocumentShareRepository(AjaiaDbConnectionFactory connections
         public string Email { get; init; } = string.Empty;
         public string AvatarColor { get; init; } = string.Empty;
         public DateTime CreatedAt { get; init; }
+    }
+
+    private sealed class UserLockRow
+    {
+        public Guid Id { get; init; }
     }
 }

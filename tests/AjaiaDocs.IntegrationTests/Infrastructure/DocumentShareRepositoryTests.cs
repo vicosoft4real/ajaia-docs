@@ -1,5 +1,6 @@
 using AjaiaDocs.Core.Documents;
 using Dapper;
+using Npgsql;
 
 namespace AjaiaDocs.IntegrationTests.Infrastructure;
 
@@ -148,6 +149,40 @@ public sealed class DocumentShareRepositoryTests(PostgresFixture fixture) : IAsy
             new { DocumentId = _documentId }));
     }
 
+    [Fact]
+    public async Task List_holds_the_authorized_document_stable_until_shares_are_read()
+    {
+        await GrantChidiAsync();
+        await using var blocker = await fixture.OpenConnectionAsync();
+        await using var blockerTransaction = await blocker.BeginTransactionAsync();
+        await blocker.ExecuteAsync("LOCK TABLE app_users IN ACCESS EXCLUSIVE MODE;",
+            transaction: blockerTransaction);
+
+        var listTask = fixture.Shares.ListAsync(DemoUsers.AminaId, _documentId,
+            CancellationToken.None);
+        try
+        {
+            await WaitForBlockedQueryAsync("%JOIN app_users collaborator%");
+
+            await using var deleting = await fixture.OpenConnectionAsync();
+            await deleting.ExecuteAsync("SET lock_timeout = '500ms';");
+            var exception = await Record.ExceptionAsync(() => deleting.ExecuteAsync(
+                "DELETE FROM documents WHERE id = @DocumentId;",
+                new { DocumentId = _documentId }));
+
+            var postgres = Assert.IsType<PostgresException>(exception);
+            Assert.Equal(PostgresErrorCodes.LockNotAvailable, postgres.SqlState);
+        }
+        finally
+        {
+            await blockerTransaction.RollbackAsync();
+        }
+
+        var result = await listTask;
+        Assert.True(result.IsSuccess);
+        Assert.Equal(DemoUsers.ChidiId, Assert.Single(result.Value).UserId);
+    }
+
     public async Task InitializeAsync()
     {
         _documentId = Guid.NewGuid();
@@ -162,4 +197,31 @@ public sealed class DocumentShareRepositoryTests(PostgresFixture fixture) : IAsy
     private Task<AjaiaDocs.Core.Common.Result<AjaiaDocs.Application.Features.Sharing.DocumentShareDto>>
         GrantChidiAsync() => fixture.Shares.GrantAsync(DemoUsers.AminaId, _documentId,
             DemoUsers.ChidiId, DateTimeOffset.UtcNow, CancellationToken.None);
+
+    private async Task WaitForBlockedQueryAsync(string queryPattern)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        await using var monitor = await fixture.OpenConnectionAsync();
+        while (!timeout.IsCancellationRequested)
+        {
+            var blocked = await monitor.ExecuteScalarAsync<bool>(new CommandDefinition(
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM pg_stat_activity
+                    WHERE pid <> pg_backend_pid()
+                      AND state = 'active'
+                      AND wait_event_type = 'Lock'
+                      AND query ILIKE @QueryPattern);
+                """, new { QueryPattern = queryPattern }, cancellationToken: timeout.Token));
+            if (blocked)
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(20), timeout.Token);
+        }
+
+        Assert.Fail($"Timed out waiting for blocked query matching {queryPattern}.");
+    }
 }
