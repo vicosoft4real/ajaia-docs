@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HttpResponse, http } from "msw";
 import { Route } from "react-router-dom";
@@ -10,6 +10,11 @@ import { sessionUser } from "../../mocks/fixtures";
 import { server } from "../../mocks/server";
 import { renderWithApp } from "../../test/renderWithApp";
 import { AppShell } from "./AppShell";
+import { Provider } from "react-redux";
+import { MemoryRouter, Routes } from "react-router-dom";
+import { setupStore } from "../../app/store";
+import { ajaiaApi } from "../../store/api/ajaiaApi";
+import { documentListItem } from "../../mocks/fixtures";
 
 describe("AppShell", () => {
   it("provides an accessible responsive workspace frame", () => {
@@ -32,6 +37,19 @@ describe("AppShell", () => {
     await user.click(screen.getByRole("button", { name: /switch user/i }));
 
     expect(await screen.findByRole("heading", { name: /choose a reviewer/i })).toBeVisible();
+  });
+
+  it("clears user-scoped API data before switching reviewers", async () => {
+    server.use(http.get("/api/documents", () => HttpResponse.json([documentListItem])));
+    const store = setupStore();
+    await store.dispatch(ajaiaApi.endpoints.getDocuments.initiate("all"));
+    expect(Object.keys(store.getState().ajaiaApi.queries)).not.toHaveLength(0);
+    render(<Provider store={store}><MemoryRouter initialEntries={["/documents"]}><Routes><Route path="/documents" element={<AppShell user={sessionUser} />} /><Route path="/login" element={<h1>Choose a reviewer</h1>} /></Routes></MemoryRouter></Provider>);
+
+    await userEvent.click(screen.getByRole("button", { name: /switch user/i }));
+
+    expect(await screen.findByRole("heading", { name: /choose a reviewer/i })).toBeVisible();
+    expect(Object.keys(store.getState().ajaiaApi.queries)).toHaveLength(0);
   });
 
   it("shows the newly selected reviewer after switching users in the same store", async () => {
