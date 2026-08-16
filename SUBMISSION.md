@@ -7,16 +7,17 @@ This is the evidence-led submission package for Ajaia Docs. It deliberately sepa
 | Item | Status |
 | --- | --- |
 | Source and approved design/implementation plan | Present in repository |
-| Backend baseline | Verified at `95d85d0`: 66 unit + 59 integration = 125 tests |
+| Backend release gate | 75 unit + 59 integration = 134 tests |
 | Reviewer documentation | Present: README, architecture, AI workflow, and walkthrough script |
 | Frontend release gate | 22 files / 47 tests passed; typecheck, lint, and production build passed |
 | Docker runtime | Docker image rebuilt; Compose PostgreSQL and API services running; `/health` returned `{"status":"healthy"}` |
 | Clean Chrome product journey | Installed-Google-Chrome `ajaia-docs.spec.ts` passed 2/2: create/format/share/collaborator and Markdown import; no browser errors |
 | Desktop/mobile Chrome screenshots | Chrome visual rerun passed 1/1 in installed Google Chrome; all four screenshots inspected and committed in `6527635` |
 | Cross-user cache/logout blockers | Reviewer cache fixed in `07ad85f`; logout sequencing fixed in `a9a2d57`; AppShell 4-test suite and typecheck passed |
-| Render public URL and deployed E2E evidence | Not deployed yet |
+| Render service | Live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com) from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; `/health` returned `{"status":"healthy"}`, `/` returned 200 `text/html`, and production startup logs are live |
+| Deployed Chrome journey | Pending: the browser-extension capability required to run it against Render is unavailable; no deployed-browser success is claimed |
 | Human walkthrough recording URL | Candidate-owned; `WALKTHROUGH_VIDEO_URL.txt` contains the pending-recording handoff until a final unlisted URL exists |
-| Archive and Google Drive upload | Candidate-owned after final merge; not yet created/uploaded |
+| Archive and Google Drive upload | Provisional archive inspected; rebuild required after final Loom URL commit. Candidate-owned Drive upload remains pending |
 
 ## Source and included artifacts
 
@@ -28,15 +29,23 @@ The repository currently includes:
 - `README.md`, `ARCHITECTURE.md`, `AI_WORKFLOW.md`, this document, and `WALKTHROUGH_SCRIPT.md`
 - Chrome E2E/visual test sources and inspected responsive evidence: `docs/screenshots/desktop-library.png`, `desktop-editor.png`, `mobile-library.png`, and `mobile-editor.png`
 
-The final merged archive has not yet been created or inspected.
+`ajaia-docs-submission.zip` is a provisional inspected archive built from `a5980bf`. It includes source, tests, Docker/Render files, the four screenshots, and the current documentation, but it embeds the pending video marker. Rebuild it after the final Loom URL becomes the only line of `WALKTHROUGH_VIDEO_URL.txt`, then inspect the rebuilt archive before the candidate uploads it to Drive.
 
 ## Live application
 
-Public URL: not deployed yet.
+Public URL: [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com)
 
-Expected health endpoint after deployment: `/health`.
+Observed live checks: `/health` returned `{"status":"healthy"}`; `/` returned HTTP `200` with `text/html`; production startup logs are live. The Render service is running merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`.
 
-Render disclosure: a free web service may cold-start after 15 idle minutes, and a free PostgreSQL database may expire after 30 days. A web-service restart can invalidate a demo login cookie on a free instance without a persistent key ring; select the same seeded identity again. PostgreSQL, not the service filesystem, stores documents.
+Render disclosure: a free web service may cold-start after 15 idle minutes. The PostgreSQL 16 free database is currently available through **2026-09-15**. A web-service restart can invalidate a demo login cookie without a persistent ASP.NET Core Data Protection key ring; select the same seeded identity again. PostgreSQL, not the service filesystem, stores documents.
+
+## Evaluator-ready submission note
+
+Ajaia Docs is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com). Start with **Amina Okafor**, create or import a document, format and save it, share it with **Chidi Okeke**, switch identity, and confirm that Chidi can edit content but cannot rename, share, revoke, or delete. The service is live on merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; its root route returned `200 text/html` and `/health` returned `{"status":"healthy"}`.
+
+The evidence package records 134 backend tests (75 unit, 59 integration), 22 frontend files / 47 tests plus typecheck, lint, and production build, a local Docker health check, a clean installed-Google-Chrome journey passing 2/2 without browser errors, and a visual pass of 1/1 with four inspected desktop/mobile screenshots. Critical/high JavaScript advisories were patched. The production dependency audit still reports three moderate React Router v6 advisories; the app uses hard-coded internal navigation and does not route untrusted user-supplied URLs, but the residual advisories remain disclosed.
+
+The locally observed Chrome evidence must not be mistaken for a Render-browser run: the deployed Chrome journey is still pending because the needed browser-extension capability is unavailable. The remaining candidate-owned handoffs are the unlisted Loom/YouTube URL, replacing `WALKTHROUGH_VIDEO_URL.txt` with that URL alone, rebuilding the archive, and uploading the archive/screenshots/video-link file to Google Drive.
 
 ## Reviewer identities
 
@@ -62,7 +71,7 @@ The integrated frontend gate verified 22 files / 47 tests, typecheck, lint, and 
 
 ## Verified tests
 
-The observed backend baseline is **66 unit tests + 59 integration tests = 125**. Those counts are intentionally scoped to the backend commit `95d85d0`.
+The observed backend release gate is **75 unit tests + 59 integration tests = 134**.
 
 The observed frontend evidence is **22 files / 47 tests**, plus passed typecheck, lint, and production build. The observed Chrome product evidence is **2/2 passed** in installed Google Chrome with no browser errors; the visual evidence is **1/1 passed**, with four inspected screenshots committed in `6527635`.
 
@@ -76,6 +85,5 @@ The tracking issue stays open until the implementation PR merges. It must not be
 
 ## Next 2–4 hours
 
-1. Complete a requirements review and a code-quality/security/accessibility review; add regression tests for accepted findings and rerun the affected/full gates.
-2. Deploy the Render Blueprint, capture the exact public URL, and repeat the Chrome journey against it.
-3. Complete the candidate-owned recording/upload handoff, merge only after passing checks, then create and inspect the final archive.
+1. Run the Chrome journey against the Render URL when the required browser-extension capability becomes available; record only its observed result.
+2. Complete the candidate-owned recording/upload handoff: receive the unlisted Loom/YouTube URL, replace the pending video file with that URL alone, rebuild/inspect the archive, and upload it with screenshots to Drive.

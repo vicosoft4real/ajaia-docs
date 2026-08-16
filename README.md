@@ -6,9 +6,11 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The full frontend suite verified **22 files / 47 tests**, and typecheck, lint, and production build passed. The Docker image rebuilt successfully; Docker Compose has PostgreSQL and the API running, and `/health` returned `{"status":"healthy"}`.
+The final backend release gate verified **75 unit tests** and **59 integration tests**: **134 backend tests**. The full frontend suite verified **22 files / 47 tests**, and typecheck, lint, and production build passed. The Docker image rebuilt successfully; Docker Compose has PostgreSQL and the API running, and `/health` returned `{"status":"healthy"}`.
 
-The clean-state installed-Google-Chrome journey passed **2/2** (create/format/share/collaborator flow and Markdown import) with no browser errors. The visual spec also passed **1/1**; all four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The Render deployment has not been completed, so no public URL is claimed.
+The clean-state installed-Google-Chrome journey passed **2/2** (create/format/share/collaborator flow and Markdown import) with no browser errors. The visual spec also passed **1/1**; all four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844.
+
+The live service is [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), deployed from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`. Its `/health` endpoint returned exact JSON `{"status":"healthy"}`; the root route returned HTTP `200` with `text/html`, and production startup logs are live. A deployed Chrome journey is not claimed because the browser-extension capability needed for that run is unavailable in this environment.
 
 A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing regression was fixed in `a9a2d57`; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed.
 
@@ -51,7 +53,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-The backend/frontend gates, Docker rebuild and health check, clean Chrome journey, and Chrome visual evidence above have been observed. The remaining release evidence is the public deployment and its browser run.
+The backend/frontend gates, Docker rebuild and health check, local Chrome journey/visual evidence, and the live Render health/root checks above have been observed. The remaining evidence is a deployed Chrome run when the required extension is available, plus the candidate-owned video and Drive handoffs.
 
 ## Demo identities
 
@@ -78,11 +80,13 @@ Imports are checked server-side by filename extension, byte size, and strict UTF
 
 ## Deployment and reviewer caveats
 
-Live application URL: not deployed yet.
+Live application URL: [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com)
 
-The approved Render Blueprint uses one Docker web service and PostgreSQL. On Render’s free tier, the web service may cold-start after 15 minutes of inactivity and the database may expire after 30 days. Document data belongs in PostgreSQL, not the web service filesystem.
+The Render service is live from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; `/health` returned `{"status":"healthy"}` and `/` returned HTTP `200` with `text/html`. The approved Render Blueprint uses one Docker web service and PostgreSQL. The free web service may cold-start after 15 minutes of inactivity; the PostgreSQL 16 free database is currently available through **2026-09-15**. Document data belongs in PostgreSQL, not the web service filesystem.
 
-The session cookie is HttpOnly, `SameSite=Strict`, secure in production, and has an eight-hour sliding expiry. A service restart on a free instance can invalidate demo login cookies because there is no persistent key ring; simply select the same seeded identity again. Persisted document data remains in PostgreSQL.
+The session cookie is HttpOnly, `SameSite=Strict`, secure in production, and has an eight-hour sliding expiry. A restart can invalidate demo login cookies because the free instance has no persistent ASP.NET Core Data Protection key ring; simply select the same seeded identity again. Persisted document data remains in PostgreSQL.
+
+Critical/high JavaScript advisories were patched. `pnpm audit --prod` still reports three moderate React Router v6 advisories; this app uses hard-coded internal navigation paths and does not route untrusted user-supplied URLs. The residual advisories are disclosed rather than represented as resolved.
 
 ## More detail
 

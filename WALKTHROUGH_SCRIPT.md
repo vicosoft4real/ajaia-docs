@@ -1,6 +1,6 @@
 # Ajaia Docs walkthrough script (3–5 minutes)
 
-Use the live deployment after it exists; it is not deployed at this update. Until then, record against the local Docker stack after the final Chrome release gate passes.
+Record against the live deployment: [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com). Allow for a free-tier cold start before beginning the 3–5 minute walkthrough.
 
 ## 0:00–0:25 — Set the frame
 
@@ -58,7 +58,7 @@ Mention the three seeded identities and the Render caveat: free services can col
 
 > “We deliberately excluded CRDTs, presence, comments, version history, `.docx`/PDF workflows, and broad workspace features so the delivered slice could be tested and honestly demonstrated.”
 
-> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 125 verified backend tests, 22 frontend files / 47 tests plus typecheck/lint/build, a locally healthy Docker stack, a 2/2 clean Chrome product journey, and a 1/1 visual pass with inspected responsive screenshots. Deployment evidence is added only after its checks complete.”
+> “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 134 verified backend tests, 22 frontend files / 47 tests plus typecheck/lint/build, a locally healthy Docker stack, a 2/2 clean Chrome product journey, and a 1/1 visual pass with inspected responsive screenshots. The live Render service has observed health and root responses; a deployed Chrome run is not claimed because the required extension is unavailable.”
 
 Close on the submission materials: README for setup, architecture and AI workflow notes, screenshots, and the human-owned video link.
 

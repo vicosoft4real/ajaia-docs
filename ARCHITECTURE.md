@@ -87,7 +87,9 @@ The editor save coordinator debounces changes, permits one request at a time, co
 
 The planned multi-stage Docker image builds the Vite SPA, publishes the API, and copies `web/dist` into the API’s static assets. The container listens on the platform `PORT`; the Render Blueprint provides a Docker web service, a PostgreSQL database connection, production environment configuration, and `/health` as its health endpoint.
 
-The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Docker image rebuilt successfully, the Compose PostgreSQL and API services are running locally, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors, and the responsive visual spec passed 1/1 with four inspected screenshots. The Render service has not yet been deployed or health-checked publicly.
+The Dockerfile, Docker Compose configuration, and Render Blueprint are present in the repository. The Docker image rebuilt successfully, the Compose PostgreSQL and API services are running locally, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors, and the responsive visual spec passed 1/1 with four inspected screenshots.
+
+The Render service is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), running merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`. Its `/health` endpoint returned `{"status":"healthy"}` and `/` returned HTTP `200` with `text/html`; production startup logs are live. The PostgreSQL 16 free database is available through **2026-09-15**. The service can cold-start after idle time, and a restart can invalidate authentication cookies because the free instance lacks a persistent ASP.NET Core Data Protection key ring; PostgreSQL document data persists. A Chrome journey against the deployed origin remains unobserved because the needed browser-extension capability is unavailable.
 
 ## Deliberate scope cuts
 
@@ -97,6 +99,6 @@ These omissions keep the evaluated slice honest: reliable persistence, clear aut
 
 ## Next work
 
-1. Deploy the Render Blueprint, verify `/health`, and rerun the Chrome journey against the public origin.
-2. Complete the human-owned video recording and Drive upload.
+1. Run the Chrome journey against the public origin when the required browser-extension capability becomes available; record only its observed result.
+2. Complete the human-owned video recording, final archive rebuild, and Drive upload.
 3. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.
