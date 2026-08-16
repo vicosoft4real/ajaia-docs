@@ -97,7 +97,6 @@ These omissions keep the evaluated slice honest: reliable persistence, clear aut
 
 ## Next work
 
-1. Finish the active Google Chrome visual rerun and record responsive screenshots plus console-error checks only if it passes.
-2. Deploy the Render Blueprint, verify `/health`, and rerun the Chrome journey against the public origin.
-3. Complete the human-owned video recording and Drive upload.
-4. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.
+1. Deploy the Render Blueprint, verify `/health`, and rerun the Chrome journey against the public origin.
+2. Complete the human-owned video recording and Drive upload.
+3. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.

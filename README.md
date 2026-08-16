@@ -6,9 +6,11 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The integrated frontend gate verified **46 tests**, typecheck, lint, and production build. The Docker image built and Docker Compose has PostgreSQL and the API running.
+The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The integrated frontend gate verified **47 tests**, typecheck, lint, and production build. The Docker image built and Docker Compose has PostgreSQL and the API running.
 
-The Google Chrome visual run is being rerun, so its final E2E/visual result and screenshot evidence are not claimed yet. The Render deployment has not been completed, so no public URL is claimed.
+The Google Chrome visual rerun passed **1/1** in the installed Google Chrome channel. All four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The Render deployment has not been completed, so no public URL is claimed.
+
+A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`; the focused AppShell gate then passed **4 tests** and typecheck.
 
 ## Quick start (Docker)
 
@@ -49,7 +51,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-The backend and frontend checks above have been observed, and the Docker image/runtime has been started. The Chrome visual rerun is the remaining active local release-evidence step.
+The backend and frontend checks above have been observed, the Docker image/runtime has been started, and the local Chrome visual evidence passed. The remaining release evidence is the public deployment and its browser run.
 
 ## Demo identities
 
@@ -68,7 +70,7 @@ Select an identity from **Demo access for reviewers**. The server only issues a 
 - Owner and shared document library views
 - Blank document creation and owner-only rename/delete/share/revoke actions
 - UTF-8 `.txt` and `.md` imports up to **1 MiB (1,048,576 bytes)**
-- Rich-text editing, formatting, autosave, and refresh persistence (covered by the 46-test frontend gate; Chrome visual evidence is being rerun)
+- Rich-text editing, formatting, autosave, and refresh persistence (covered by the 47-test frontend gate and inspected Chrome visual evidence)
 - Collaborator content edits; collaborators cannot rename, share, revoke, or delete
 - PostgreSQL persistence and version-based conflict detection
 
