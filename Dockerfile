@@ -26,9 +26,9 @@ COPY --from=web-build /src/web/dist /app/publish/wwwroot
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-RUN addgroup --system app && adduser --system --ingroup app app
-COPY --from=api-build /app/publish ./
-USER app
+# The .NET runtime image supplies the non-root app identity through APP_UID.
+COPY --chown=$APP_UID:$APP_UID --from=api-build /app/publish ./
+USER $APP_UID
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 8080
