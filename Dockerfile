@@ -17,7 +17,7 @@ COPY src/AjaiaDocs.Core/AjaiaDocs.Core.csproj src/AjaiaDocs.Core/
 COPY src/AjaiaDocs.Application/AjaiaDocs.Application.csproj src/AjaiaDocs.Application/
 COPY src/AjaiaDocs.Infrastructure/AjaiaDocs.Infrastructure.csproj src/AjaiaDocs.Infrastructure/
 COPY src/AjaiaDocs.Api/AjaiaDocs.Api.csproj src/AjaiaDocs.Api/
-RUN dotnet restore AjaiaDocs.sln
+RUN dotnet restore src/AjaiaDocs.Api/AjaiaDocs.Api.csproj
 
 COPY src ./src
 RUN dotnet publish src/AjaiaDocs.Api/AjaiaDocs.Api.csproj --configuration Release --no-restore --output /app/publish
