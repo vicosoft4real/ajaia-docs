@@ -11,7 +11,7 @@ export function AppShell({ user }: { user: User }) {
   const dispatch = useAppDispatch();
   const [getAntiforgery] = useLazyGetAntiforgeryQuery();
   const [endSession, { isLoading }] = useEndSessionMutation();
-  const switchUser = async () => { await getAntiforgery().unwrap(); await endSession().unwrap(); dispatch(ajaiaApi.util.resetApiState()); navigate("/login", { replace: true }); };
+  const switchUser = async () => { await getAntiforgery().unwrap(); await endSession().unwrap(); navigate("/login", { replace: true }); setTimeout(() => dispatch(ajaiaApi.util.resetApiState()), 0); };
   return <div className="app-frame"><header className="app-header">
     <Link aria-label="Ajaia Docs home" className="app-logo" to="/documents"><FileText aria-hidden="true" size={20} />Ajaia Docs</Link>
     <nav aria-label="Workspace"><NavLink to="/documents"><Library aria-hidden="true" size={17} />Documents</NavLink><NavLink to="/documents/new"><Plus aria-hidden="true" size={17} />New document</NavLink></nav>

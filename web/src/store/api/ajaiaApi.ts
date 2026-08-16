@@ -41,7 +41,6 @@ export const ajaiaApi = createApi({
     }),
     endSession: builder.mutation<void, void>({
       query: () => ({ url: "/session", method: "DELETE" }),
-      invalidatesTags: ["Session"],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
         dispatch(clearSession());
