@@ -6,7 +6,7 @@ type ApiState = { session: SessionState };
 
 export const ajaiaApi = createApi({
   reducerPath: "ajaiaApi",
-  tagTypes: ["Documents", "Document"],
+  tagTypes: ["Session", "Documents", "Document"],
   baseQuery: fetchBaseQuery({
     baseUrl: "/api",
     credentials: "include",
@@ -27,18 +27,21 @@ export const ajaiaApi = createApi({
     }),
     getSession: builder.query<User, void>({
       query: () => "/session",
+      providesTags: ["Session"],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try { dispatch(setCurrentUser((await queryFulfilled).data)); } catch { dispatch(clearSession()); }
       },
     }),
     startSession: builder.mutation<User, { userId: string }>({
       query: (body) => ({ url: "/session", method: "POST", body }),
+      invalidatesTags: ["Session"],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         dispatch(setCurrentUser((await queryFulfilled).data));
       },
     }),
     endSession: builder.mutation<void, void>({
       query: () => ({ url: "/session", method: "DELETE" }),
+      invalidatesTags: ["Session"],
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
         dispatch(clearSession());
