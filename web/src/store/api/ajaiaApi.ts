@@ -65,7 +65,10 @@ export const ajaiaApi = createApi({
       query: (id) => ({ url: `/documents/${id}`, method: "DELETE" }),
       invalidatesTags: (_result, _error, id) => [{ type: "Documents", id: "LIST" }, { type: "Document", id }],
     }),
+    getDocument: builder.query<DocumentDetail, string>({ query: (id) => `/documents/${id}`, providesTags: (_result, _error, id) => [{ type: "Document", id }] }),
+    updateDocumentContent: builder.mutation<DocumentDetail, { id: string; contentFormat: "lexical"; content: string; plainText: string; expectedVersion: number }>({ query: ({ id, ...body }) => ({ url: `/documents/${id}/content`, method: "PUT", body }) }),
+    updateDocumentTitle: builder.mutation<DocumentDetail, { id: string; title: string; expectedVersion: number }>({ query: ({ id, ...body }) => ({ url: `/documents/${id}/title`, method: "PUT", body }) }),
   }),
 });
 
-export const { useCreateDocumentMutation, useDeleteDocumentMutation, useEndSessionMutation, useGetAntiforgeryQuery, useGetDocumentsQuery, useGetSessionQuery, useImportDocumentMutation, useLazyGetAntiforgeryQuery, useStartSessionMutation } = ajaiaApi;
+export const { useCreateDocumentMutation, useDeleteDocumentMutation, useEndSessionMutation, useGetAntiforgeryQuery, useGetDocumentQuery, useGetDocumentsQuery, useGetSessionQuery, useImportDocumentMutation, useLazyGetAntiforgeryQuery, useStartSessionMutation, useUpdateDocumentContentMutation, useUpdateDocumentTitleMutation } = ajaiaApi;
