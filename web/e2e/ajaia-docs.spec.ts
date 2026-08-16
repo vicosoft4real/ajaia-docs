@@ -6,13 +6,19 @@ const fixturePath = fileURLToPath(
   new URL("./fixtures/reviewer-brief.md", import.meta.url),
 );
 
-let assertNoBrowserErrors: () => void;
+let assertNoBrowserErrors: () => void = () => {};
 
 test.beforeEach(async ({ page }) => {
   assertNoBrowserErrors = monitorBrowserErrors(page);
 });
 
-test.afterEach(() => assertNoBrowserErrors());
+test.afterEach(() => {
+  try {
+    assertNoBrowserErrors();
+  } finally {
+    assertNoBrowserErrors = () => {};
+  }
+});
 
 async function loginAsAmina(page: Page): Promise<void> {
   await page.goto("/login");

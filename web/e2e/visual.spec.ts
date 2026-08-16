@@ -13,14 +13,20 @@ const screenshotsDirectory = resolve(
   "../../docs/screenshots",
 );
 
-let assertNoBrowserErrors: () => void;
+let assertNoBrowserErrors: () => void = () => {};
 
 test.beforeEach(async ({ page }) => {
   assertNoBrowserErrors = monitorBrowserErrors(page);
   await mkdir(screenshotsDirectory, { recursive: true });
 });
 
-test.afterEach(() => assertNoBrowserErrors());
+test.afterEach(() => {
+  try {
+    assertNoBrowserErrors();
+  } finally {
+    assertNoBrowserErrors = () => {};
+  }
+});
 
 async function loginAsAmina(page: Page): Promise<void> {
   await page.goto("/login");
