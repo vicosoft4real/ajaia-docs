@@ -34,8 +34,8 @@ The final observed backend test evidence is:
 | Suite | Verified count |
 | --- | ---: |
 | Unit | 75 |
-| Integration | 59 |
-| Total backend | 134 |
+| Integration | 60 |
+| Total backend | 135 |
 
 The backend tests cover domain/access decisions, application validation and sharing/import behavior, PostgreSQL migration/persistence behavior, session and antiforgery routes, and owner-to-collaborator HTTP journeys.
 
@@ -43,7 +43,7 @@ The integrated frontend release gate verified **22 files / 47 tests**, `pnpm --d
 
 The clean-state installed-Google-Chrome `ajaia-docs.spec.ts` journey passed **2/2**, covering create/format/share/collaborator and Markdown-import paths with no browser errors. The visual spec passed **1/1**. The four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The visual gate covers responsive overflow, visible keyboard focus, and browser diagnostics.
 
-A release blocker found during the final pass could retain reviewer-specific cached data after switching identities. It was fixed in `07ad85f`. A second release fix, `a9a2d57`, avoids a session refetch during logout; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed. The Render service is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com) from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; `/health` returned `{"status":"healthy"}`, `/` returned 200 `text/html`, and production startup logs are live. A Chrome run against the public origin is not claimed because the required browser-extension capability is unavailable.
+A release blocker found during the final pass could retain reviewer-specific cached data after switching identities. It was fixed in `07ad85f`. A second release fix, `a9a2d57`, avoids a session refetch during logout; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed. The Render service is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com) from merged `main` commit `28f989dc2bf724b9418e3e7beda102774c6844fd`. Live health, root, antiforgery, login, and authenticated-session checks returned 200; the cookie was observed as `Secure`, `SameSite=Strict`, and `HttpOnly`. Installed Google Chrome reached `/documents` as Amina, fully loaded **Work in progress**, produced zero browser errors, and was visually inspected.
 
 ## Quality guardrails
 
@@ -51,4 +51,4 @@ The plan requires test-first behavior for custom production code, with generated
 
 Critical/high JavaScript advisories were patched. The production dependency audit still reports three moderate React Router v6 advisories. The app uses hard-coded internal navigation paths rather than untrusted user-supplied URLs; the residual advisories are documented rather than claimed as resolved.
 
-This document does not claim that AI output is correct by itself. The submission relies on observed local test/browser evidence, observed Render health/root evidence, and the recorded [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The deployed Chrome journey, final archive rebuild, and candidate-owned Drive upload remain pending.
+This document does not claim that AI output is correct by itself. The submission relies on observed local test/browser evidence, observed Render authentication and installed-Chrome evidence, and the recorded [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The [Google Drive folder](https://drive.google.com/drive/folders/1iEw1uCn9KWcOyvykQbl_SdSzuhVxEPsd) contains all 11 uploaded items. It was created private by default; enabling public link sharing remains a manual step because the required Chrome-control extension is unavailable.
