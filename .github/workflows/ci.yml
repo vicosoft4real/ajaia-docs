@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Restore backend dependencies
+        run: dotnet restore AjaiaDocs.sln
+
+      - name: Build backend
+        run: dotnet build AjaiaDocs.sln --configuration Release --no-restore
+
+      - name: Test backend
+        run: dotnet test AjaiaDocs.sln --configuration Release --no-build
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test frontend
+        run: pnpm --dir web test
+
+      - name: Type-check frontend
+        run: pnpm --dir web typecheck
+
+      - name: Lint frontend
+        run: pnpm --dir web lint
+
+      - name: Build frontend
+        run: pnpm --dir web build
+
+      - name: Start release stack
+        run: docker compose up -d --build
+
+      - name: Wait for health endpoint
+        run: |
+          for attempt in {1..30}; do
+            curl --fail --silent --show-error http://127.0.0.1:8080/health && exit 0
+            sleep 2
+          done
+          docker compose logs
+          exit 1
+
+      - name: Install Google Chrome for Playwright
+        run: pnpm --dir web exec playwright install --with-deps chrome
+
+      - name: Run Chrome collaboration journey
+        run: pnpm --dir web test:e2e --project=chrome
+
+      - name: Upload Playwright evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          if-no-files-found: ignore
+          path: |
+            web/test-results
+            web/playwright-report
+            docs/screenshots
+
+      - name: Stop release stack
+        if: always()
+        run: docker compose down -v

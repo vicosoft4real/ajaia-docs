@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ajaia-docs
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__Postgres
+        fromDatabase:
+          name: ajaia-docs-postgres
+          property: connectionString
+
+databases:
+  - name: ajaia-docs-postgres
+    databaseName: ajaia_docs
+    user: ajaia_docs
+    plan: free
