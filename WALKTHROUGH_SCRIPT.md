@@ -60,7 +60,7 @@ Mention the three seeded identities and the Render caveat: free services can col
 
 > “Codex, Superpowers, frontend-design, and parallel agents accelerated implementation and documentation. AI suggestions for real-time collaboration and extra platform layers were narrowed or rejected. The package records 134 verified backend tests, 22 frontend files / 47 tests plus typecheck/lint/build, a locally healthy Docker stack, a 2/2 clean Chrome product journey, and a 1/1 visual pass with inspected responsive screenshots. The live Render service has observed health and root responses; a deployed Chrome run is not claimed because the required extension is unavailable.”
 
-Close on the submission materials: README for setup, architecture and AI workflow notes, screenshots, and the human-owned video link.
+Close on the submission materials: README for setup, architecture and AI workflow notes, screenshots, and the recorded [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f).
 
 ## Recording checklist
 
@@ -68,4 +68,4 @@ Close on the submission materials: README for setup, architecture and AI workflo
 - Keep the walkthrough to 3–5 minutes; do not imply live cursors or automatic merge.
 - Show an actual save then refresh, and an actual identity switch after sharing.
 - Do not expose secrets; the seeded `.example.test` identities are intentional demo data.
-- After upload, provide the unlisted URL so `WALKTHROUGH_VIDEO_URL.txt` can contain that URL as its only line.
+- The recording is complete at [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f); rebuild the final archive and complete the Drive upload before submission.

@@ -51,4 +51,4 @@ The plan requires test-first behavior for custom production code, with generated
 
 Critical/high JavaScript advisories were patched. The production dependency audit still reports three moderate React Router v6 advisories. The app uses hard-coded internal navigation paths rather than untrusted user-supplied URLs; the residual advisories are documented rather than claimed as resolved.
 
-This document does not claim that AI output is correct by itself. The submission relies on observed local test/browser evidence and observed Render health/root evidence; the deployed Chrome journey and candidate-owned video/Drive handoffs remain pending.
+This document does not claim that AI output is correct by itself. The submission relies on observed local test/browser evidence, observed Render health/root evidence, and the recorded [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The deployed Chrome journey, final archive rebuild, and candidate-owned Drive upload remain pending.

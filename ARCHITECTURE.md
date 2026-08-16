@@ -100,5 +100,5 @@ These omissions keep the evaluated slice honest: reliable persistence, clear aut
 ## Next work
 
 1. Run the Chrome journey against the public origin when the required browser-extension capability becomes available; record only its observed result.
-2. Complete the human-owned video recording, final archive rebuild, and Drive upload.
+2. Complete the final archive rebuild and Drive upload; the walkthrough recording is already available on [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f).
 3. After the timebox, consider version history, comments, richer imports/exports, search/folders, and a genuinely real-time collaboration protocol only with the corresponding conflict-resolution and operational safeguards.

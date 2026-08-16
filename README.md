@@ -12,6 +12,8 @@ The clean-state installed-Google-Chrome journey passed **2/2** (create/format/sh
 
 The live service is [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com), deployed from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`. Its `/health` endpoint returned exact JSON `{"status":"healthy"}`; the root route returned HTTP `200` with `text/html`, and production startup logs are live. A deployed Chrome journey is not claimed because the browser-extension capability needed for that run is unavailable in this environment.
 
+The recorded walkthrough is available on [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). Rebuilding the final archive and uploading the archive, screenshots, and video-link file to Google Drive remain candidate-owned handoffs.
+
 A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing regression was fixed in `a9a2d57`; the AppShell suite passed **4 tests**, the full frontend suite passed, and typecheck passed.
 
 ## Quick start (Docker)
@@ -53,7 +55,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-The backend/frontend gates, Docker rebuild and health check, local Chrome journey/visual evidence, and the live Render health/root checks above have been observed. The remaining evidence is a deployed Chrome run when the required extension is available, plus the candidate-owned video and Drive handoffs.
+The backend/frontend gates, Docker rebuild and health check, local Chrome journey/visual evidence, live Render health/root checks, and recorded walkthrough above have been observed. The remaining handoffs are a deployed Chrome run when the required extension is available, rebuilding the final archive, and the candidate-owned Drive upload.
 
 ## Demo identities
 
@@ -94,5 +96,6 @@ Critical/high JavaScript advisories were patched. `pnpm audit --prod` still repo
 - [AI workflow and verification record](AI_WORKFLOW.md)
 - [Reviewer submission checklist](SUBMISSION.md)
 - [3–5 minute walkthrough script](WALKTHROUGH_SCRIPT.md)
+- [Recorded walkthrough (Loom)](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f)
 
 The tracking issue remains open until the implementation PR merges: <https://github.com/vicosoft4real/ajaia-docs/issues/1>.
