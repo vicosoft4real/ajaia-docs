@@ -17,7 +17,7 @@ This is the evidence-led submission package for Ajaia Docs. It deliberately sepa
 | Render service | Live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-z2ua.onrender.com) from merged `main` commit `6639ae0328b5d530334b528191108a807a5edef4`; `/health` returned `{"status":"healthy"}`, `/` returned 200 `text/html`, and production startup logs are live |
 | Deployed Chrome journey | Pending: the browser-extension capability required to run it against Render is unavailable; no deployed-browser success is claimed |
 | Human walkthrough recording | Complete: [Loom walkthrough](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f) |
-| Archive and Google Drive upload | Provisional archive inspected; rebuild required after final Loom URL commit. Candidate-owned Drive upload remains pending |
+| Archive and Google Drive upload | Final source archive rebuilt and inspected after the Loom URL update. Candidate-owned Drive upload remains pending |
 
 ## Source and included artifacts
 
@@ -29,7 +29,7 @@ The repository currently includes:
 - `README.md`, `ARCHITECTURE.md`, `AI_WORKFLOW.md`, this document, and `WALKTHROUGH_SCRIPT.md`
 - Chrome E2E/visual test sources and inspected responsive evidence: `docs/screenshots/desktop-library.png`, `desktop-editor.png`, `mobile-library.png`, and `mobile-editor.png`
 
-`ajaia-docs-submission.zip` is a provisional inspected archive built from `a5980bf`. It includes source, tests, Docker/Render files, the four screenshots, and the pre-Loom documentation. Rebuild it after this video-link documentation commit, then inspect the rebuilt archive before the candidate uploads it to Drive.
+`ajaia-docs-submission.zip` is the final inspected source archive. It includes source, tests, Docker/Render files, the four screenshots, and the completed Loom documentation. Upload it with the screenshots and video-link file to the candidate's Google Drive submission folder.
 
 ## Live application
 
@@ -45,7 +45,7 @@ Ajaia Docs is live at [https://ajaia-docs-z2ua.onrender.com](https://ajaia-docs-
 
 The evidence package records 134 backend tests (75 unit, 59 integration), 22 frontend files / 47 tests plus typecheck, lint, and production build, a local Docker health check, a clean installed-Google-Chrome journey passing 2/2 without browser errors, and a visual pass of 1/1 with four inspected desktop/mobile screenshots. Critical/high JavaScript advisories were patched. The production dependency audit still reports three moderate React Router v6 advisories; the app uses hard-coded internal navigation and does not route untrusted user-supplied URLs, but the residual advisories remain disclosed.
 
-The locally observed Chrome evidence must not be mistaken for a Render-browser run: the deployed Chrome journey is still pending because the needed browser-extension capability is unavailable. The walkthrough is recorded at [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The remaining candidate-owned handoffs are rebuilding/inspecting the final archive and uploading the archive, screenshots, and video-link file to Google Drive.
+The locally observed Chrome evidence must not be mistaken for a Render-browser run: the deployed Chrome journey is still pending because the needed browser-extension capability is unavailable. The walkthrough is recorded at [Loom](https://www.loom.com/share/e1c4f6a6b75e489da9b89e825a09267f). The remaining candidate-owned handoff is uploading the final archive, screenshots, and video-link file to Google Drive.
 
 ## Reviewer identities
 
@@ -77,12 +77,11 @@ The observed frontend evidence is **22 files / 47 tests**, plus passed typecheck
 
 ## Remaining human-owned handoffs
 
-1. Rebuild and inspect the final archive after this Loom URL commit.
-2. Upload the final archive, screenshots, and video-link file to one Google Drive folder.
+1. Upload the final archive, screenshots, and video-link file to one Google Drive folder.
 
 The tracking issue stays open until the implementation PR merges. It must not be closed manually before merge.
 
 ## Next 2–4 hours
 
 1. Run the Chrome journey against the Render URL when the required browser-extension capability becomes available; record only its observed result.
-2. Rebuild/inspect the final archive after this Loom URL commit and complete the candidate-owned Google Drive upload with the screenshots and video-link file.
+2. Complete the candidate-owned Google Drive upload with the final archive, screenshots, and video-link file.
