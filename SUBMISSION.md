@@ -9,10 +9,11 @@ This is the evidence-led submission package for Ajaia Docs. It deliberately sepa
 | Source and approved design/implementation plan | Present in repository |
 | Backend baseline | Verified at `95d85d0`: 66 unit + 59 integration = 125 tests |
 | Reviewer documentation | Present: README, architecture, AI workflow, and walkthrough script |
-| Frontend release gate | 47 tests passed; typecheck, lint, and production build passed |
-| Docker runtime | Docker image built; Compose PostgreSQL and API services running locally |
+| Frontend release gate | 22 files / 47 tests passed; typecheck, lint, and production build passed |
+| Docker runtime | Docker image rebuilt; Compose PostgreSQL and API services running; `/health` returned `{"status":"healthy"}` |
+| Clean Chrome product journey | Installed-Google-Chrome `ajaia-docs.spec.ts` passed 2/2: create/format/share/collaborator and Markdown import; no browser errors |
 | Desktop/mobile Chrome screenshots | Chrome visual rerun passed 1/1 in installed Google Chrome; all four screenshots inspected and committed in `6527635` |
-| Cross-user cache blocker | Reviewer-specific cache release blocker fixed in `07ad85f`; focused AppShell 4 tests and typecheck passed |
+| Cross-user cache/logout blockers | Reviewer cache fixed in `07ad85f`; logout sequencing fixed in `a9a2d57`; focused AppShell 5 tests and typecheck passed |
 | Render public URL and deployed E2E evidence | Not deployed yet |
 | Human walkthrough recording URL | Candidate-owned; `WALKTHROUGH_VIDEO_URL.txt` contains the pending-recording handoff until a final unlisted URL exists |
 | Archive and Google Drive upload | Candidate-owned after final merge; not yet created/uploaded |
@@ -57,13 +58,13 @@ These are seeded demo identities, not production accounts. No password is requir
 - Collaborator document access and content editing, while owner-only actions return a protected `owner_required` failure
 - Concealed inaccessible documents (`404`) and sanitized structured API errors
 
-The integrated frontend gate verified 47 tests, typecheck, lint, and production build. The Docker image built and local Compose PostgreSQL/API services are running. The Chrome visual rerun passed 1/1 in installed Google Chrome, and all four 1440×1000/390×844 screenshots were inspected. A cross-user cache blocker was fixed in `07ad85f`, followed by 4 focused AppShell tests and typecheck passing.
+The integrated frontend gate verified 22 files / 47 tests, typecheck, lint, and production build. The Docker image rebuilt, local Compose PostgreSQL/API services are running, and `/health` returned `{"status":"healthy"}`. The clean-state installed-Google-Chrome journey passed 2/2 without browser errors; the Chrome visual rerun passed 1/1 and all four 1440×1000/390×844 screenshots were inspected. A cross-user cache blocker was fixed in `07ad85f`; the logout sequencing fix in `a9a2d57` added a fifth focused AppShell test, and that focused gate plus typecheck passed.
 
 ## Verified tests
 
 The observed backend baseline is **66 unit tests + 59 integration tests = 125**. Those counts are intentionally scoped to the backend commit `95d85d0`.
 
-The observed frontend evidence is **47 tests**, plus passed typecheck, lint, and production build. The observed Chrome visual evidence is **1/1 passed** in installed Google Chrome, with four inspected screenshots committed in `6527635`.
+The observed frontend evidence is **22 files / 47 tests**, plus passed typecheck, lint, and production build. The observed Chrome product evidence is **2/2 passed** in installed Google Chrome with no browser errors; the visual evidence is **1/1 passed**, with four inspected screenshots committed in `6527635`.
 
 ## Incomplete handoffs that must remain human-owned
 

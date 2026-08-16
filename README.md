@@ -6,11 +6,11 @@ It is not a Google Docs clone. The product chooses durable PostgreSQL persistenc
 
 ## Current verification status
 
-The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The integrated frontend gate verified **47 tests**, typecheck, lint, and production build. The Docker image built and Docker Compose has PostgreSQL and the API running.
+The backend release gate at commit `95d85d0` verified **66 unit tests** and **59 integration tests**: **125 backend tests**. The full frontend suite verified **22 files / 47 tests**, and typecheck, lint, and production build passed. The Docker image rebuilt successfully; Docker Compose has PostgreSQL and the API running, and `/health` returned `{"status":"healthy"}`.
 
-The Google Chrome visual rerun passed **1/1** in the installed Google Chrome channel. All four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The Render deployment has not been completed, so no public URL is claimed.
+The clean-state installed-Google-Chrome journey passed **2/2** (create/format/share/collaborator flow and Markdown import) with no browser errors. The visual spec also passed **1/1**; all four committed screenshots were inspected: desktop library/editor at 1440×1000 and mobile library/editor at 390×844. The Render deployment has not been completed, so no public URL is claimed.
 
-A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`; the focused AppShell gate then passed **4 tests** and typecheck.
+A cross-user cache release blocker—stale reviewer data after switching identities—was found and fixed in `07ad85f`. A logout-sequencing fix in `a9a2d57` added a fifth focused AppShell regression test; the focused AppShell gate passed **5 tests** and typecheck.
 
 ## Quick start (Docker)
 
@@ -51,7 +51,7 @@ curl --fail http://127.0.0.1:8080/health
 pnpm --dir web test:e2e --project=chrome
 ```
 
-The backend and frontend checks above have been observed, the Docker image/runtime has been started, and the local Chrome visual evidence passed. The remaining release evidence is the public deployment and its browser run.
+The backend/frontend gates, Docker rebuild and health check, clean Chrome journey, and Chrome visual evidence above have been observed. The remaining release evidence is the public deployment and its browser run.
 
 ## Demo identities
 
