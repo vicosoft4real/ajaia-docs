@@ -24,7 +24,7 @@ public static class PostgresConnectionString
 
         if (!Uri.TryCreate(candidate, UriKind.Absolute, out var uri) ||
             !uri.Scheme.Equals("postgresql", StringComparison.OrdinalIgnoreCase) ||
-            string.IsNullOrWhiteSpace(uri.Host) || uri.Port <= 0 ||
+            string.IsNullOrWhiteSpace(uri.Host) || uri.Port is 0 or < -1 ||
             !string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
         {
             throw new ArgumentException("The PostgreSQL connection URI is malformed or unsupported.",
@@ -58,7 +58,7 @@ public static class PostgresConnectionString
         return new NpgsqlConnectionStringBuilder
         {
             Host = uri.Host,
-            Port = uri.Port,
+            Port = uri.Port == -1 ? 5432 : uri.Port,
             Username = username,
             Password = password,
             Database = database
